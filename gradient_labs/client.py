@@ -16,7 +16,12 @@ class Client:
         self.base_url = base_url
 
     def start_conversation(
-        self, *, id: str, customer_id: str, metadata: Any = None
+        self,
+        *,
+        id: str,
+        customer_id: str,
+        metadata: Any = None,
+        timeout: int = None,
     ) -> Conversation:
         body = self._post(
             "conversations",
@@ -25,6 +30,7 @@ class Client:
                 "customer_id": customer_id,
                 "metadata": metadata,
             },
+            timeout=timeout,
         )
 
         return Conversation(
@@ -45,6 +51,7 @@ class Client:
         participant_id: str,
         participant_type: ParticipantType,
         created: datetime = None,
+        timeout: int = None,
     ) -> None:
         if created is None:
             created = datetime.now()
@@ -58,18 +65,20 @@ class Client:
                 "participant_type": participant_type,
                 "created": UTC.localize(created).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             },
+            timeout=timeout,
         )
 
-    def cancel_conversation(self, *, id: str) -> None:
+    def cancel_conversation(self, *, id: str, timeout: int = None) -> None:
         requests.put(
             f"{self.base_url}/conversations/{id}/cancel",
             headers={
                 "Authorization": f"Bearer {self.api_key}",
                 "User-Agent": USER_AGENT,
             },
+            timeout=timeout,
         )
 
-    def _post(self, path: str, body: Any):
+    def _post(self, path: str, body: Any, timeout: int = None):
         url = f"{self.base_url}/{path}"
 
         rsp = requests.post(
@@ -80,6 +89,7 @@ class Client:
                 "Authorization": f"Bearer {self.api_key}",
                 "User-Agent": USER_AGENT,
             },
+            timeout=timeout,
         )
 
         if rsp.status_code != 200:
