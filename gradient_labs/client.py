@@ -1,13 +1,13 @@
-import json
-import requests
-from .errors import ResponseError
-from .types import ParticipantType, Conversation
 from datetime import datetime
-from pytz import UTC
 from typing import Any
 
+import requests
+from pytz import UTC
+from .errors import ResponseError
+from .types import ParticipantType, Conversation
+
 API_BASE_URL = "https://api.gradient-labs.ai"
-USER_AGENT = f"Gradient Labs Python"
+USER_AGENT = "Gradient Labs Python"
 
 
 class Client:
@@ -18,7 +18,7 @@ class Client:
     def start_conversation(
         self,
         *,
-        id: str,
+        conversation_id: str,
         customer_id: str,
         metadata: Any = None,
         timeout: int = None,
@@ -26,27 +26,19 @@ class Client:
         body = self._post(
             "conversations",
             {
-                "id": id,
+                "id": conversation_id,
                 "customer_id": customer_id,
                 "metadata": metadata,
             },
             timeout=timeout,
         )
-
-        return Conversation(
-            id=body["id"],
-            customer_id=body["customer_id"],
-            created=body["created"],
-            updated=body["updated"],
-            metadata=body["metadata"],
-            status=body["status"],
-        )
+        return Conversation.from_dict(body)
 
     def add_message(
         self,
         *,
+        message_id: str,
         conversation_id: str,
-        id: str,
         body: str,
         participant_id: str,
         participant_type: ParticipantType,
@@ -59,7 +51,7 @@ class Client:
         body = self._post(
             f"conversations/{conversation_id}/messages",
             {
-                "id": id,
+                "id": message_id,
                 "body": body,
                 "participant_id": participant_id,
                 "participant_type": participant_type,
@@ -68,9 +60,9 @@ class Client:
             timeout=timeout,
         )
 
-    def cancel_conversation(self, *, id: str, timeout: int = None) -> None:
+    def cancel_conversation(self, *, conversation_id: str, timeout: int = None) -> None:
         requests.put(
-            f"{self.base_url}/conversations/{id}/cancel",
+            f"{self.base_url}/conversations/{conversation_id}/cancel",
             headers={
                 "Authorization": f"Bearer {self.api_key}",
                 "User-Agent": USER_AGENT,
@@ -80,7 +72,6 @@ class Client:
 
     def _post(self, path: str, body: Any, timeout: int = None):
         url = f"{self.base_url}/{path}"
-
         rsp = requests.post(
             url,
             json=body,
@@ -91,8 +82,6 @@ class Client:
             },
             timeout=timeout,
         )
-
         if rsp.status_code != 200:
             raise ResponseError(rsp)
-
         return rsp.json()
