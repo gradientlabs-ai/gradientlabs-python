@@ -5,17 +5,30 @@ from gradient_labs.types import Conversation
 
 
 @pytest.fixture
-def now_iso() -> str:
-    return datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+def now() -> str:
+    return datetime.now()
 
 
-def test_conversation(now_iso):
+def test_conversation(now):
     body = {
         "id": "id-1234",
         "customer_id": "cust-456",
-        "created": now_iso,
-        "updated": now_iso,
-        "metadata": {},
+        "created": now.isoformat(),
+        "updated": now.isoformat(),
+        "metadata": {
+            "user_type": "premium",
+        },
         "status": "open",
     }
     got = Conversation.from_dict(body)
+    want = Conversation(
+        id="id-1234",
+        customer_id="cust-456",
+        created=now,
+        updated=now,
+        metadata={
+            "user_type": "premium",
+        },
+        status="open",
+    )
+    assert want == got
