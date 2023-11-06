@@ -1,5 +1,4 @@
 import os
-import uuid
 from gradient_labs import Client, ParticipantType
 from datetime import datetime
 
@@ -8,7 +7,10 @@ client = Client(
     base_url="http://localhost:4000",
 )
 
-conv = client.start_conversation(id=f"python-conversation-12345", customer_id="snake")
+conv = client.start_conversation(
+    conversation_id="python-conversation-12345",
+    customer_id="snake",
+)
 
 client.add_message(
     conversation_id=conv.id,
