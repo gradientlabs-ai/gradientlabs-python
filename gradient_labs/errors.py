@@ -1,4 +1,8 @@
 class ResponseError(Exception):
+    """
+    Exeception representing an unexpected HTTP response status from the API.
+    """
+
     def __init__(self, response):
         super().__init__()
 
@@ -7,3 +11,9 @@ class ResponseError(Exception):
 
     def __str__(self):
         return f"HTTP {self.status_code}: {self.message}"
+
+
+class SignatureVerificationError(Exception):
+    """
+    Exception representing the webhook signature was invalid or too old.
+    """
