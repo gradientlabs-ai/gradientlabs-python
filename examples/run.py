@@ -14,11 +14,11 @@ conv = client.start_conversation(
 
 client.add_message(
     conversation_id=conv.id,
-    id="msg123",
+    message_id="msg123",
     body="Hello, world!",
     participant_type=ParticipantType.CUSTOMER,
     participant_id="user123",
     created=datetime.now(),
 )
 
-client.cancel_conversation(id=conv.id)
+client.cancel_conversation(conversation_id=conv.id)
