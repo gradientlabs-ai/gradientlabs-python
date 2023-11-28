@@ -31,14 +31,14 @@ class Conversation:
     created: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=parser.parse,  # Using dateutil's parser
+            decoder=parser.parse,
             mm_field=fields.DateTime(format="iso"),
         )
     )
     updated: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=parser.parse,  # Using dateutil's parser
+            decoder=parser.parse,
             mm_field=fields.DateTime(format="iso"),
         )
     )
