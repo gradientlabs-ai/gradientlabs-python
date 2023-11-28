@@ -1,10 +1,10 @@
-import json
+from dateutil import parser
 from enum import Enum
 from datetime import datetime
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config
 from marshmallow import fields
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 
 class ParticipantType(str, Enum):
@@ -31,14 +31,14 @@ class Conversation:
     created: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parser.parse,  # Using dateutil's parser
             mm_field=fields.DateTime(format="iso"),
         )
     )
     updated: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parser.parse,  # Using dateutil's parser
             mm_field=fields.DateTime(format="iso"),
         )
     )
