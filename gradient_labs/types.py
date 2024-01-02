@@ -14,6 +14,7 @@ class ParticipantType(str, Enum):
     CUSTOMER: str = "Customer"
     AGENT: str = "Agent"
 
+
 class ConversationChannel(str, Enum):
 
     """A channel identifies how the customer has gotten
