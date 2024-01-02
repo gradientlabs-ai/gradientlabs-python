@@ -1,10 +1,9 @@
-import json
 from enum import Enum
 from datetime import datetime
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config
 from marshmallow import fields
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 
 class ParticipantType(str, Enum):
@@ -14,6 +13,14 @@ class ParticipantType(str, Enum):
 
     CUSTOMER: str = "Customer"
     AGENT: str = "Agent"
+
+class ConversationChannel(str, Enum):
+
+    """A channel identifies how the customer has gotten
+    in touch with customer support."""
+
+    EMAIL: str = "email"
+    WEB: str = "web"
 
 
 @dataclass_json
@@ -26,6 +33,7 @@ class Conversation:
 
     id: str
     customer_id: str
+    channel: str
     metadata: dict
     status: str
     created: datetime = field(

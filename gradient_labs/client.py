@@ -20,6 +20,7 @@ class Client:
         *,
         conversation_id: str,
         customer_id: str,
+        channel: str,
         metadata: Any = None,
         timeout: int = None,
     ) -> Conversation:
@@ -28,6 +29,7 @@ class Client:
             {
                 "id": conversation_id,
                 "customer_id": customer_id,
+                "channel": channel,
                 "metadata": metadata,
             },
             timeout=timeout,
