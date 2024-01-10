@@ -12,7 +12,8 @@ class ParticipantType(str, Enum):
     sent a message in a conversation."""
 
     CUSTOMER: str = "Customer"
-    AGENT: str = "Agent"
+    HUMAN_AGENT: str = "Agent"
+    BOT: str = "Bot"
 
 
 class ConversationChannel(str, Enum):
