@@ -25,6 +25,15 @@ class ConversationChannel(str, Enum):
     WEB: str = "web"
 
 
+class AttachmentType(str, Enum):
+
+    """An attachment type identifies the type of file
+    that a customer has uploaded into the conversation."""
+
+    IMAGE: str = "image"
+    FILE: str = "file"
+
+
 @dataclass_json
 @dataclass(frozen=True)
 class Conversation:
@@ -35,7 +44,7 @@ class Conversation:
 
     id: str
     customer_id: str
-    channel: str
+    channel: ConversationChannel
     metadata: dict
     status: str
     created: datetime = field(
@@ -52,6 +61,14 @@ class Conversation:
             mm_field=fields.DateTime(format="iso"),
         )
     )
+
+@dataclass_json
+@dataclass(frozen=True)
+class Attachment:
+
+    type: AttachmentType
+    file_name: str
+    url: str
 
 
 @dataclass(frozen=True)
