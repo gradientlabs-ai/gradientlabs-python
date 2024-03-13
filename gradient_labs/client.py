@@ -1,10 +1,10 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, List
 
 import requests
 from pytz import UTC
 from .errors import ResponseError
-from .types import ParticipantType, Conversation
+from .types import ParticipantType, Conversation, Attachment
 
 API_BASE_URL = "https://api.gradient-labs.ai"
 USER_AGENT = "Gradient Labs Python"
@@ -46,6 +46,7 @@ class Client:
         participant_type: ParticipantType,
         created: datetime = None,
         timeout: int = None,
+        attachments: List[Attachment] = None,
     ) -> None:
         if created is None:
             created = datetime.now()
@@ -58,6 +59,7 @@ class Client:
                 "participant_id": participant_id,
                 "participant_type": participant_type,
                 "created": UTC.localize(created).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                "attachments": attachments,
             },
             timeout=timeout,
         )
