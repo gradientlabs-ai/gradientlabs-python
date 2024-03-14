@@ -1,6 +1,10 @@
 ## Project setup
 
+This library uses Poetry:
 
+```bash
+brew install poetry
+```
 
 ## Publishing a new version
 
