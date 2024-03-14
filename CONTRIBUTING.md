@@ -1,4 +1,4 @@
-## Project setup
+## Project setup
 
 This library uses Poetry, which can be installed via:
 
