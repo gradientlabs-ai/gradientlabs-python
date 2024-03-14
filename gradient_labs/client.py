@@ -63,7 +63,6 @@ class Client:
             },
             timeout=timeout,
         )
-        return body
 
     def cancel_conversation(self, *, conversation_id: str, timeout: int = None) -> None:
         requests.put(
