@@ -41,7 +41,7 @@ client.add_message(
             type=AttachmentType.FILE,
             file_name="bank_statement.pdf",
         )
-    ]
+    ],
 )
 
 client.cancel_conversation(id=conv.id)
