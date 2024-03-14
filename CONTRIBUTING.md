@@ -1,3 +1,7 @@
+## Project setup
+
+
+
 ## Publishing a new version
 
 - Update the version number in [`pyproject.toml`](./pyproject.toml)

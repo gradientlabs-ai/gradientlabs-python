@@ -68,7 +68,6 @@ class Attachment:
 
     type: AttachmentType
     file_name: str
-    url: str
 
 
 @dataclass(frozen=True)
