@@ -59,7 +59,9 @@ class Client:
                 "participant_id": participant_id,
                 "participant_type": participant_type,
                 "created": UTC.localize(created).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                "attachments": [a.to_dict() for a in attachments] if attachments is not None else [],
+                "attachments": [a.to_dict() for a in attachments]
+                if attachments is not None
+                else [],
             },
             timeout=timeout,
         )

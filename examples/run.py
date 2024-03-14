@@ -4,7 +4,13 @@ import uuid
 from datetime import datetime
 import logging
 
-from gradient_labs import Client, ConversationChannel, ParticipantType, Attachment, AttachmentType
+from gradient_labs import (
+    Client,
+    ConversationChannel,
+    ParticipantType,
+    Attachment,
+    AttachmentType,
+)
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
