@@ -14,7 +14,7 @@ poetry install
 
 ## Running the examples
 
-This library uses Poetry, which can be installed via:
+The examples live in the `examples/` directory, which you can run with:
 
 ```bash
 make run
