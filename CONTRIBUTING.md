@@ -12,7 +12,7 @@ And then you can set up a virtual environment for this library with:
 poetry install
 ```
 
-## Running the examples
+## Running the examples
 
 The examples live in the `examples/` directory, which you can run with:
 
