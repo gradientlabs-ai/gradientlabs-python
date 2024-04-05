@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, List
+from typing import Any, List, Optional, Callable
 
 import requests
 from pytz import UTC
@@ -15,6 +15,39 @@ class Client:
         self.api_key = api_key
         self.base_url = base_url
 
+    def assign_conversation(self, *, conversation_id: str,
+        participant_type: ParticipantType,
+        assignee_id: Optional[str] = None,
+        timeout: int = None,
+    ) -> None:
+        """ Assigns a conversation to the given participant. """
+        _ = self._put(
+            f"/conversations/{conversation_id}/assignee",
+            {
+                "assignee_id": assignee_id,
+                "assignee_type": participant_type,
+            },
+            timeout=timeout,
+        )
+
+    def end_conversation(self, *, conversation_id: str, timeout: int = None) -> None:
+        """ Ends the conversation """
+        _ = self._post(
+            f"/conversations/{conversation_id}/end",
+            {},
+            timeout=timeout,
+        )
+
+    def read_conversation(self, *, conversation_id: str, timeout: int = None) -> Conversation:
+        """ Retrieves the conversation """
+        body = self._get(
+            f"/conversations/{conversation_id}",
+            {},
+            timeout=timeout,
+        )
+        return Conversation.from_dict(body)
+        
+
     def start_conversation(
         self,
         *,
@@ -24,6 +57,7 @@ class Client:
         metadata: Any = None,
         timeout: int = None,
     ) -> Conversation:
+        """ Starts a conversation. """
         body = self._post(
             "conversations",
             {
@@ -48,6 +82,7 @@ class Client:
         timeout: int = None,
         attachments: List[Attachment] = None,
     ) -> None:
+        """ Adds a message to a conversation. """
         if created is None:
             created = datetime.now()
 
@@ -66,19 +101,18 @@ class Client:
             timeout=timeout,
         )
 
-    def cancel_conversation(self, *, conversation_id: str, timeout: int = None) -> None:
-        requests.put(
-            f"{self.base_url}/conversations/{conversation_id}/cancel",
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "User-Agent": USER_AGENT,
-            },
-            timeout=timeout,
-        )
-
     def _post(self, path: str, body: Any, timeout: int = None):
+        return self._api_call(requests.post, path, body, timeout)
+    
+    def _put(self, path: str, body: Any, timeout: int = None):
+        return self._api_call(requests.put, path, body, timeout)
+    
+    def _get(self, path: str, body: Any, timeout: int = None):
+        return self._api_call(requests.get, path, body, timeout)
+
+    def _api_call(self, request_func: Callable, path: str, body: Any, timeout: int = None):
         url = f"{self.base_url}/{path}"
-        rsp = requests.post(
+        rsp = request_func(
             url,
             json=body,
             headers={
@@ -88,6 +122,6 @@ class Client:
             },
             timeout=timeout,
         )
-        if rsp.status_code != 200:
+        if rsp.status_code < 200 or rsp.status_code > 299:
             raise ResponseError(rsp)
         return rsp.json()
