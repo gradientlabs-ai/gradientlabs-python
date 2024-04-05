@@ -25,7 +25,7 @@ class Client:
     ) -> None:
         """Assigns a conversation to the given participant."""
         _ = self._put(
-            f"/conversations/{conversation_id}/assignee",
+            f"conversations/{conversation_id}/assignee",
             {
                 "assignee_id": assignee_id,
                 "assignee_type": participant_type,
@@ -35,8 +35,8 @@ class Client:
 
     def end_conversation(self, *, conversation_id: str, timeout: int = None) -> None:
         """Ends the conversation"""
-        _ = self._post(
-            f"/conversations/{conversation_id}/end",
+        _ = self._put(
+            f"conversations/{conversation_id}/end",
             {},
             timeout=timeout,
         )
@@ -46,7 +46,7 @@ class Client:
     ) -> Conversation:
         """Retrieves the conversation"""
         body = self._get(
-            f"/conversations/{conversation_id}",
+            f"conversations/{conversation_id}",
             {},
             timeout=timeout,
         )
@@ -130,4 +130,5 @@ class Client:
         )
         if rsp.status_code < 200 or rsp.status_code > 299:
             raise ResponseError(rsp)
-        return rsp.json()
+        if len(rsp.content) != 0:
+            return rsp.json()
