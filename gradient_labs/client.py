@@ -15,12 +15,15 @@ class Client:
         self.api_key = api_key
         self.base_url = base_url
 
-    def assign_conversation(self, *, conversation_id: str,
+    def assign_conversation(
+        self,
+        *,
+        conversation_id: str,
         participant_type: ParticipantType,
         assignee_id: Optional[str] = None,
         timeout: int = None,
     ) -> None:
-        """ Assigns a conversation to the given participant. """
+        """Assigns a conversation to the given participant."""
         _ = self._put(
             f"/conversations/{conversation_id}/assignee",
             {
@@ -31,22 +34,23 @@ class Client:
         )
 
     def end_conversation(self, *, conversation_id: str, timeout: int = None) -> None:
-        """ Ends the conversation """
+        """Ends the conversation"""
         _ = self._post(
             f"/conversations/{conversation_id}/end",
             {},
             timeout=timeout,
         )
 
-    def read_conversation(self, *, conversation_id: str, timeout: int = None) -> Conversation:
-        """ Retrieves the conversation """
+    def read_conversation(
+        self, *, conversation_id: str, timeout: int = None
+    ) -> Conversation:
+        """Retrieves the conversation"""
         body = self._get(
             f"/conversations/{conversation_id}",
             {},
             timeout=timeout,
         )
         return Conversation.from_dict(body)
-        
 
     def start_conversation(
         self,
@@ -57,7 +61,7 @@ class Client:
         metadata: Any = None,
         timeout: int = None,
     ) -> Conversation:
-        """ Starts a conversation. """
+        """Starts a conversation."""
         body = self._post(
             "conversations",
             {
@@ -82,7 +86,7 @@ class Client:
         timeout: int = None,
         attachments: List[Attachment] = None,
     ) -> None:
-        """ Adds a message to a conversation. """
+        """Adds a message to a conversation."""
         if created is None:
             created = datetime.now()
 
@@ -103,14 +107,16 @@ class Client:
 
     def _post(self, path: str, body: Any, timeout: int = None):
         return self._api_call(requests.post, path, body, timeout)
-    
+
     def _put(self, path: str, body: Any, timeout: int = None):
         return self._api_call(requests.put, path, body, timeout)
-    
+
     def _get(self, path: str, body: Any, timeout: int = None):
         return self._api_call(requests.get, path, body, timeout)
 
-    def _api_call(self, request_func: Callable, path: str, body: Any, timeout: int = None):
+    def _api_call(
+        self, request_func: Callable, path: str, body: Any, timeout: int = None
+    ):
         url = f"{self.base_url}/{path}"
         rsp = request_func(
             url,
