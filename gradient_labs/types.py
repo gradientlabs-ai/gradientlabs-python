@@ -13,6 +13,7 @@ class ParticipantType(str, Enum):
 
     CUSTOMER: str = "Customer"
     HUMAN_AGENT: str = "Agent"
+    AI_AGENT: str = "AI Agent"
     BOT: str = "Bot"
 
 

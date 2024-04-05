@@ -1,4 +1,4 @@
-.PHONY: fmt test run
+.PHONY: fmt test run install
 
 fmt:
 	@poetry run black ./
@@ -8,3 +8,6 @@ test:
 
 run:
 	@poetry run python examples/run.py
+
+install:
+	@poetry install

@@ -32,7 +32,7 @@ client.add_message(
     conversation_id=conv.id,
     message_id=str(uuid.uuid4()),
     body="Hello, how can we help you?",
-    participant_type=ParticipantType.CUSTOMER,
+    participant_type=ParticipantType.BOT,
     participant_id="bot",
 )
 logging.info("✅ Bot message added")
@@ -40,12 +40,24 @@ logging.info("✅ Bot message added")
 client.add_message(
     conversation_id=conv.id,
     message_id=str(uuid.uuid4()),
-    body="Hello, world! Could I have a bank statement?",
+    body="Hello! Could I have a bank statement?",
     participant_type=ParticipantType.CUSTOMER,
     participant_id="user_123",
     created=datetime.now(),
 )
 logging.info("✅ Customer message added")
+
+client.assign_conversation(
+    conversation_id=conv.id,
+    participant_type=ParticipantType.AI_AGENT,
+)
+logging.info("✅ Assigned to Gradient Labs")
+
+client.assign_conversation(
+    conversation_id=conv.id,
+    participant_type=ParticipantType.HUMAN_AGENT,
+)
+logging.info("✅ Assigned to a human agent")
 
 client.add_message(
     conversation_id=conv.id,
@@ -62,5 +74,5 @@ client.add_message(
 )
 logging.info("✅ Human agent message added")
 
-client.cancel_conversation(conversation_id=conv.id)
-logging.info(f"✅ Conversation cancelled: {conv.id}")
+client.end_conversation(conversation_id=conv.id)
+logging.info(f"✅ Conversation closed: {conv.id}")
