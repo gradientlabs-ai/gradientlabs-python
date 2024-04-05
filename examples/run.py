@@ -10,10 +10,10 @@ from gradient_labs import (
     ParticipantType,
     Attachment,
     AttachmentType,
+    ResponseError,
 )
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-
 
 client = Client(
     api_key=os.environ["GLABS_API_KEY"],
@@ -47,11 +47,16 @@ client.add_message(
 )
 logging.info("✅ Customer message added")
 
-client.assign_conversation(
-    conversation_id=conv.id,
-    participant_type=ParticipantType.AI_AGENT,
-)
-logging.info("✅ Assigned to Gradient Labs")
+try:
+    client.assign_conversation(
+        conversation_id=conv.id,
+        participant_type=ParticipantType.AI_AGENT,
+    )
+    logging.info("✅ Assigned to Gradient Labs")
+except ResponseError as exc:
+    if exc.status_code == 400:
+        logging.info("✅ Cannot assign to Gradient Labs without a webhook")
+
 
 client.assign_conversation(
     conversation_id=conv.id,
@@ -76,3 +81,6 @@ logging.info("✅ Human agent message added")
 
 client.end_conversation(conversation_id=conv.id)
 logging.info(f"✅ Conversation closed: {conv.id}")
+
+conv = client.read_conversation(conversation_id=conv.id)
+logging.info(f"✅ Conversation status is: {conv.status}")
