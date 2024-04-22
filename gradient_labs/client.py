@@ -11,9 +11,14 @@ USER_AGENT = "Gradient Labs Python"
 
 
 class Client:
-    def __init__(self, *, api_key: str, base_url: str = API_BASE_URL):
+    def __init__(self, *, api_key: str, base_url: str = API_BASE_URL, timeout: int = None):
         self.api_key = api_key
         self.base_url = base_url
+        self.timeout = timeout
+
+    @classmethod
+    def localize(cls, timestamp: datetime) -> str:
+        return UTC.localize(timestamp).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     def assign_conversation(
         self,
@@ -21,34 +26,36 @@ class Client:
         conversation_id: str,
         participant_type: ParticipantType,
         assignee_id: Optional[str] = None,
-        timeout: int = None,
+        assigned: Optional[datetime] = None,
     ) -> None:
         """Assigns a conversation to the given participant."""
+        body = {"assignee_type": participant_type}
+        if assignee_id:
+            body["assignee_id"] = assignee_id
+        if assigned:
+            body["assigned"] = self.localize(assigned)
         _ = self._put(
             f"conversations/{conversation_id}/assignee",
-            {
-                "assignee_id": assignee_id,
-                "assignee_type": participant_type,
-            },
-            timeout=timeout,
+            body,
         )
 
-    def end_conversation(self, *, conversation_id: str, timeout: int = None) -> None:
+    def end_conversation(self, *, conversation_id: str, finished: Optional[datetime] = None) -> None:
         """Ends the conversation"""
+        body = {}
+        if finished is not None:
+            body["finished"] = self.localize(finished)
         _ = self._put(
             f"conversations/{conversation_id}/end",
-            {},
-            timeout=timeout,
+            body,
         )
 
     def read_conversation(
-        self, *, conversation_id: str, timeout: int = None
+        self, *, conversation_id: str
     ) -> Conversation:
         """Retrieves the conversation"""
         body = self._get(
             f"conversations/{conversation_id}",
             {},
-            timeout=timeout,
         )
         return Conversation.from_dict(body)
 
@@ -58,21 +65,24 @@ class Client:
         conversation_id: str,
         customer_id: str,
         channel: str,
-        metadata: Any = None,
-        timeout: int = None,
+        created: Optional[datetime] = None,
+        metadata: Optional[Any] = None,
     ) -> Conversation:
         """Starts a conversation."""
-        body = self._post(
+        body = {
+            "id": conversation_id,
+            "customer_id": customer_id,
+            "channel": channel,
+        }
+        if metadata is not None:
+            body["metadata"] = metadata
+        if created is not None:
+            body["created"] = self.localize(created)
+        rsp = self._post(
             "conversations",
-            {
-                "id": conversation_id,
-                "customer_id": customer_id,
-                "channel": channel,
-                "metadata": metadata,
-            },
-            timeout=timeout,
+            body,
         )
-        return Conversation.from_dict(body)
+        return Conversation.from_dict(rsp)
 
     def add_message(
         self,
@@ -82,41 +92,37 @@ class Client:
         body: str,
         participant_id: str,
         participant_type: ParticipantType,
-        created: datetime = None,
-        timeout: int = None,
+        created: Optional[datetime] = None,
         attachments: List[Attachment] = None,
     ) -> None:
         """Adds a message to a conversation."""
+        body = {
+            "id": message_id,
+            "body": body,
+            "participant_id": participant_id,
+            "participant_type": participant_type,
+        }
         if created is None:
-            created = datetime.now()
+            body["created"] = self.localize(created)
+        if attachments is not None and len(attachments) != 0:
+            body["attachments"] = [a.to_dict() for a in attachments]
 
-        body = self._post(
+        _ = self._post(
             f"conversations/{conversation_id}/messages",
-            {
-                "id": message_id,
-                "body": body,
-                "participant_id": participant_id,
-                "participant_type": participant_type,
-                "created": UTC.localize(created).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                "attachments": [a.to_dict() for a in attachments]
-                if attachments is not None
-                else [],
-            },
-            timeout=timeout,
+            body,
         )
 
-    def _post(self, path: str, body: Any, timeout: int = None):
-        return self._api_call(requests.post, path, body, timeout)
+    def _post(self, path: str, body: Any):
+        return self._api_call(requests.post, path, body)
 
-    def _put(self, path: str, body: Any, timeout: int = None):
-        return self._api_call(requests.put, path, body, timeout)
+    def _put(self, path: str, body: Any):
+        return self._api_call(requests.put, path, body)
 
-    def _get(self, path: str, body: Any, timeout: int = None):
-        return self._api_call(requests.get, path, body, timeout)
+    def _get(self, path: str, body: Any):
+        return self._api_call(requests.get, path, body)
 
     def _api_call(
-        self, request_func: Callable, path: str, body: Any, timeout: int = None
-    ):
+        self, request_func: Callable, path: str, body: Any):
         url = f"{self.base_url}/{path}"
         rsp = request_func(
             url,
@@ -126,7 +132,7 @@ class Client:
                 "Authorization": f"Bearer {self.api_key}",
                 "User-Agent": USER_AGENT,
             },
-            timeout=timeout,
+            timeout=self.timeout,
         )
         if rsp.status_code < 200 or rsp.status_code > 299:
             raise ResponseError(rsp)
