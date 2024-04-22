@@ -26,24 +26,24 @@ class Client:
         conversation_id: str,
         participant_type: ParticipantType,
         assignee_id: Optional[str] = None,
-        assigned: Optional[datetime] = None,
+        timestamp: Optional[datetime] = None,
     ) -> None:
         """Assigns a conversation to the given participant."""
         body = {"assignee_type": participant_type}
         if assignee_id:
             body["assignee_id"] = assignee_id
-        if assigned:
-            body["assigned"] = self.localize(assigned)
+        if timestamp:
+            body["timestamp"] = self.localize(timestamp)
         _ = self._put(
             f"conversations/{conversation_id}/assignee",
             body,
         )
 
-    def end_conversation(self, *, conversation_id: str, finished: Optional[datetime] = None) -> None:
+    def end_conversation(self, *, conversation_id: str, timestamp: Optional[datetime] = None) -> None:
         """Ends the conversation"""
         body = {}
-        if finished is not None:
-            body["finished"] = self.localize(finished)
+        if timestamp is not None:
+            body["timestamp"] = self.localize(timestamp)
         _ = self._put(
             f"conversations/{conversation_id}/end",
             body,
