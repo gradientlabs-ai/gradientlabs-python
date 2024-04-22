@@ -11,7 +11,9 @@ USER_AGENT = "Gradient Labs Python"
 
 
 class Client:
-    def __init__(self, *, api_key: str, base_url: str = API_BASE_URL, timeout: int = None):
+    def __init__(
+        self, *, api_key: str, base_url: str = API_BASE_URL, timeout: int = None
+    ):
         self.api_key = api_key
         self.base_url = base_url
         self.timeout = timeout
@@ -39,7 +41,9 @@ class Client:
             body,
         )
 
-    def end_conversation(self, *, conversation_id: str, timestamp: Optional[datetime] = None) -> None:
+    def end_conversation(
+        self, *, conversation_id: str, timestamp: Optional[datetime] = None
+    ) -> None:
         """Ends the conversation"""
         body = {}
         if timestamp is not None:
@@ -49,9 +53,7 @@ class Client:
             body,
         )
 
-    def read_conversation(
-        self, *, conversation_id: str
-    ) -> Conversation:
+    def read_conversation(self, *, conversation_id: str) -> Conversation:
         """Retrieves the conversation"""
         body = self._get(
             f"conversations/{conversation_id}",
@@ -121,8 +123,7 @@ class Client:
     def _get(self, path: str, body: Any):
         return self._api_call(requests.get, path, body)
 
-    def _api_call(
-        self, request_func: Callable, path: str, body: Any):
+    def _api_call(self, request_func: Callable, path: str, body: Any):
         url = f"{self.base_url}/{path}"
         rsp = request_func(
             url,
