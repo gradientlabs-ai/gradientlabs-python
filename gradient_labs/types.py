@@ -7,7 +7,6 @@ from typing import Any, Dict
 
 
 class ParticipantType(str, Enum):
-
     """A participant type identifies the type of user who has
     sent a message in a conversation."""
 
@@ -18,7 +17,6 @@ class ParticipantType(str, Enum):
 
 
 class ConversationChannel(str, Enum):
-
     """A channel identifies how the customer has gotten
     in touch with customer support."""
 
@@ -27,7 +25,6 @@ class ConversationChannel(str, Enum):
 
 
 class AttachmentType(str, Enum):
-
     """An attachment type identifies the type of file
     that a customer has uploaded into the conversation."""
 
@@ -38,7 +35,6 @@ class AttachmentType(str, Enum):
 @dataclass_json
 @dataclass(frozen=True)
 class Conversation:
-
     """A conversation is the primary way that a customer
     talks to our AI agent.
     """

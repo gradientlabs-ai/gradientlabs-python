@@ -79,6 +79,16 @@ client.add_message(
 )
 logging.info("✅ Human agent message added")
 
+client.add_resource(
+    conversation_id=conv.id,
+    name="account-details",
+    data={
+        "sort_code": "123456",
+        "account_type": "personal",
+    },
+)
+logging.info("✅ Resource added")
+
 client.end_conversation(conversation_id=conv.id)
 logging.info(f"✅ Conversation closed: {conv.id}")
 

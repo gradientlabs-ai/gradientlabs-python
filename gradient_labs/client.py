@@ -104,7 +104,7 @@ class Client:
             "participant_id": participant_id,
             "participant_type": participant_type,
         }
-        if created is None:
+        if created is not None:
             body["created"] = self.localize(created)
         if attachments is not None and len(attachments) != 0:
             body["attachments"] = [a.to_dict() for a in attachments]
@@ -112,6 +112,19 @@ class Client:
         _ = self._post(
             f"conversations/{conversation_id}/messages",
             body,
+        )
+
+    def add_resource(
+        self,
+        *,
+        conversation_id: str,
+        name: str,
+        data: Any,
+    ) -> None:
+        """Attaches a resource to the conversation."""
+        _ = self._put(
+            f"conversations/{conversation_id}/resources/{name}",
+            data,
         )
 
     def _post(self, path: str, body: Any):
