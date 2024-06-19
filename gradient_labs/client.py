@@ -104,7 +104,7 @@ class Client:
             "participant_id": participant_id,
             "participant_type": participant_type,
         }
-        if created is None:
+        if created is not None:
             body["created"] = self.localize(created)
         if attachments is not None and len(attachments) != 0:
             body["attachments"] = [a.to_dict() for a in attachments]
