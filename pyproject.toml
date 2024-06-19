@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gradient-labs"
-version = "0.6.0"
+version = "0.7.0"
 description = "Python bindings for the Gradient Labs API"
 authors = ["Gradient Labs <python-client@gradient-labs.ai>"]
 readme = "README.md"
