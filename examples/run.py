@@ -85,7 +85,7 @@ client.add_resource(
     data={
         "sort_code": "123456",
         "account_type": "personal",
-    }
+    },
 )
 logging.info("✅ Resource added")
 
