@@ -114,6 +114,19 @@ class Client:
             body,
         )
 
+    def add_resource(
+        self,
+        *,
+        conversation_id: str,
+        name: str,
+        data: Any,
+    ) -> None:
+        """Attaches a resource to the conversation."""
+        _ = self._put(
+            f"conversations/{conversation_id}/resources/{name}",
+            data,
+        )
+
     def _post(self, path: str, body: Any):
         return self._api_call(requests.post, path, body)
 
