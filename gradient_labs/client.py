@@ -41,15 +41,15 @@ class Client:
             body,
         )
 
-    def end_conversation(
+    def finish_conversation(
         self, *, conversation_id: str, timestamp: Optional[datetime] = None
     ) -> None:
-        """Ends the conversation"""
+        """Finishes the conversation"""
         body = {}
         if timestamp is not None:
             body["timestamp"] = self.localize(timestamp)
         _ = self._put(
-            f"conversations/{conversation_id}/end",
+            f"conversations/{conversation_id}/finish",
             body,
         )
 
