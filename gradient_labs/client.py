@@ -4,6 +4,7 @@ from typing import Any, List, Optional, Callable
 import requests
 from pytz import UTC
 from .errors import ResponseError
+from .webhook import Webhook, WebhookEvent
 from .types import ParticipantType, Conversation, Attachment
 
 API_BASE_URL = "https://api.gradient-labs.ai"
@@ -11,12 +12,14 @@ USER_AGENT = "Gradient Labs Python"
 
 
 class Client:
+    
     def __init__(
-        self, *, api_key: str, base_url: str = API_BASE_URL, timeout: int = None
+        self, *, api_key: str, signing_key: Optional[str] = None, base_url: str = API_BASE_URL, timeout: int = None
     ):
         self.api_key = api_key
         self.base_url = base_url
         self.timeout = timeout
+        self.signing_key = signing_key
 
     @classmethod
     def localize(cls, timestamp: datetime) -> str:
@@ -125,6 +128,13 @@ class Client:
         _ = self._put(
             f"conversations/{conversation_id}/resources/{name}",
             data,
+        )
+
+    def parse_webhook(self, payload: str, signature_header: str) -> WebhookEvent:
+        return Webhook.parse_event(
+            payload=payload,
+            signature_header=signature_header,
+            signing_key=self.signing_key,
         )
 
     def _post(self, path: str, body: Any):

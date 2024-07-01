@@ -3,7 +3,7 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from hashlib import sha256
-from typing import Any, Optional
+from typing import Optional
 from pytz import UTC
 from .errors import SignatureVerificationError
 from .types import *
@@ -46,7 +46,6 @@ class Webhook:
             header=signature_header,
             signing_key=signing_key,
         )
-
         if not sig.valid:
             raise SignatureVerificationError("invalid signature")
 
@@ -54,7 +53,6 @@ class Webhook:
             raise SignatureVerificationError("expired signature")
 
         data = json.loads(payload)
-
         if data["type"] == "agent.message":
             data["data"] = AgentMessageEvent.from_dict(data["data"])
         elif data["type"] == "conversation.hand_off":
@@ -63,7 +61,6 @@ class Webhook:
             data["data"] = ConversationFinishedEvent.from_dict(data["data"])
         elif data["type"] == "action.execute":
             data["data"] = ActionExecuteEvent.from_dict(data["data"])
-
         return WebhookEvent.from_dict(data)
 
     @classmethod
