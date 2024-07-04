@@ -12,9 +12,14 @@ USER_AGENT = "Gradient Labs Python"
 
 
 class Client:
-    
+
     def __init__(
-        self, *, api_key: str, signing_key: Optional[str] = None, base_url: str = API_BASE_URL, timeout: int = None
+        self,
+        *,
+        api_key: str,
+        signing_key: Optional[str] = None,
+        base_url: str = API_BASE_URL,
+        timeout: int = None,
     ):
         self.api_key = api_key
         self.base_url = base_url
