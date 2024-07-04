@@ -48,8 +48,7 @@ class Webhook:
         )
         if not sig.valid:
             raise SignatureVerificationError("invalid signature")
-
-        if UTC.localize(datetime.now()) - cls.LEEWAY > sig.timestamp:
+        if abs(UTC.localize(datetime.now()) - sig.timestamp) > cls.LEEWAY:
             raise SignatureVerificationError("expired signature")
 
         data = json.loads(payload)
@@ -83,7 +82,7 @@ class Webhook:
 
         valid = any(hmac.compare_digest(expected_sig, s) for s in signatures)
         return WebhookSignature(
-            timestamp=datetime.fromtimestamp(timestamp, UTC),
+            timestamp=UTC.localize(datetime.fromtimestamp(timestamp)),
             valid=valid,
         )
 
