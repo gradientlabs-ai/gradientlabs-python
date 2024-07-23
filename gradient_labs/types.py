@@ -1,3 +1,4 @@
+from typing import Optional
 from enum import Enum
 from datetime import datetime
 from dataclasses import dataclass, field
@@ -114,6 +115,16 @@ class ConversationHandOffEvent:
     """
     Details of the conversation the event relates to.
     """
+
+    # reason_code is the code that describes why the agent wants to hand off this
+	# conversation.
+    reason_code: str
+
+    # Reason is a human-legible description of the Reason code.
+    reason: str
+
+    # Target defines where the agent wants to hand this conversation to.
+    target: Optional[str] = None
 
 
 @dataclass_json
