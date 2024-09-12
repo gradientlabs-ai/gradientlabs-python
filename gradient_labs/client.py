@@ -135,6 +135,16 @@ class Client:
             data,
         )
 
+    def upsert_hand_off_target(self, *, hand_off_target_id: str, name: str) -> None:
+        """Inserts or updates a hand-off target."""
+        _ = self._post(
+            f"hand-off-targets",
+            {
+                "id": hand_off_target_id,
+                "name": name,
+            },
+        )
+
     def parse_webhook(self, payload: str, signature_header: str) -> WebhookEvent:
         return Webhook.parse_event(
             payload=payload,
