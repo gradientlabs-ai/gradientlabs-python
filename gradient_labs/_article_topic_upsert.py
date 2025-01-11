@@ -1,0 +1,58 @@
+from typing import Optional
+from datetime import datetime
+
+from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json, config
+from marshmallow import fields
+
+from ._http_client import HttpClient
+
+
+@dataclass_json
+@dataclass(frozen=True)
+class ArticleTopicUpsertParams:
+    # id is your identifier for this topic
+    id: str
+
+    # parent_id is the identifier for this topic's parent topic (if any).
+    parent_id: str
+
+    # name is the topic's name. This cannot be empty.
+    name: str
+
+    # description is an topic's tagline. It may be empty.
+    description: str
+
+    # visibility describes who can see this topic, ranging from the
+    # whole world (public) through to employees only (internal).
+    visibility: str
+
+    # status describes whether this topic is published or not.
+    status: str
+
+    # data optionally gives additional meta-data about the topic.
+    data: Optional[dict] = {}
+
+    # created is when the topic was first created.
+    created: datetime = field(
+        metadata=config(
+            encoder=datetime.isoformat,
+            decoder=datetime.fromisoformat,
+            mm_field=fields.DateTime(format="iso"),
+        )
+    )
+
+    # last_edited is when the topic was last changed.
+    last_edited: datetime = field(
+        metadata=config(
+            encoder=datetime.isoformat,
+            decoder=datetime.fromisoformat,
+            mm_field=fields.DateTime(format="iso"),
+        )
+    )
+
+
+def upsert_article_topic(
+    *, client: HttpClient, params: ArticleTopicUpsertParams
+) -> None:
+    _ = client.post(path="topics", body=params.to_dict())

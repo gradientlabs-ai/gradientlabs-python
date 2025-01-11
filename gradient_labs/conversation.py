@@ -33,6 +33,29 @@ class AttachmentType(str, Enum):
     FILE: str = "file"
 
 
+class ConversationEventType(str, Enum):
+    """ConversationEventType describes an event that occurred within the conversation."""
+
+    # TYPING means the customer or human agent started typing.
+    TYPING: str = "typing"
+
+    # DELIVERED means that a message has been delivered
+    # to a participant
+    DELIVERED: str = "delivered"
+
+    # MESSAGE_READ means that a message has been read
+    # by the participant it was delivered to
+    MESSAGE_READ: str = "read"
+
+    # JOIN means the customer or human agent joined the
+    # conversation.
+    JOIN: str = "join"
+
+    # LEAVE means the customer or human agent left the
+    # conversation.
+    LEAVE: str = "leave"
+
+
 @dataclass_json
 @dataclass(frozen=True)
 class Conversation:

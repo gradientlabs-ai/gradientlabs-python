@@ -1,14 +1,26 @@
 from typing import Any, Optional
 
+from ._article_topic_upsert import upsert_article_topic, ArticleTopicUpsertParams
+from ._article_upsert import upsert_article, UpsertArticleParams
+
 from .conversation import Conversation
+from ._conversation_add_message import add_message, AddMessageParams, Message
 from ._conversation_add_resource import add_resource
 from ._conversation_assign import assign_conversation, AssignmentParams
+from ._conversation_cancel import cancel_conversation, CancelParams
+from ._conversation_event import add_conversation_event, EventParams
 from ._conversation_finish import finish_conversation, FinishParams
 from ._conversation_read import read_conversation
 from ._conversation_start import start_conversation, StartConversationParams
+
 from ._handoff_target_upsert import upsert_hand_off_target, UpsertHandOffTargetParams
-from ._http_client import HttpClient, API_BASE_URL
-from ._message import add_message, AddMessageParams, Message
+from ._handoff_targets import list_handoff_targets, HandOffTargets
+
+from ._tool_create import create_tool, Tool
+from ._tool_read import read_tool
+from ._tool_uninstall import uninstall_tool
+from ._tool_update import update_tool
+
 from ._http_client import HttpClient, API_BASE_URL
 from .webhook import Webhook, WebhookEvent
 
@@ -35,6 +47,19 @@ class Client:
         )
         self.signing_key = signing_key
 
+    def upsert_article_topic(self, *, params: ArticleTopicUpsertParams) -> None:
+        upsert_article_topic(
+            client=self.http_client,
+            params=params,
+        )
+
+    def upsert_article(self, *, params: UpsertArticleParams) -> None:
+        """upsert_article inserts or updates a help article"""
+        upsert_article(
+            client=self.http_client,
+            params=params,
+        )
+
     def assign_conversation(
         self,
         *,
@@ -44,6 +69,30 @@ class Client:
         """Assigns a conversation to the given participant."""
         assign_conversation(
             client=self.client,
+            conversation_id=conversation_id,
+            params=params,
+        )
+
+    def cancel_conversation(
+        self, *, conversation_id: str, params: CancelParams
+    ) -> None:
+        """cancel_conversation cancels the conversation.
+
+        This is intended for cases where the conversation is being explicitly cancelled or terminated.
+        Use finish_conversation() when the conversation is has reached a natural 'end' state, such as it being
+        resolved or closed due to inactivity."""
+        cancel_conversation(
+            client=self.http_client,
+            conversation_id=conversation_id,
+            params=params,
+        )
+
+    def add_conversation_event(
+        self, *, conversation_id: str, params: EventParams
+    ) -> None:
+        """add_conversation_event records an event, such as the customer started typing."""
+        add_conversation_event(
+            client=self.http_client,
             conversation_id=conversation_id,
             params=params,
         )
@@ -134,6 +183,50 @@ class Client:
         upsert_hand_off_target(
             client=self.http_client,
             params=params,
+        )
+
+    def list_handoff_targets(self) -> HandOffTargets:
+        """list_handoff_targets returns all of your hand off targets.
+
+        Note: requires a `Management` API key."""
+        return list_handoff_targets(client=self.http_client)
+
+    def create_tool(self, *, tool: Tool) -> Tool:
+        """create_tool creates a new tool.
+
+        Note: requires a `Management` API key."""
+        return create_tool(
+            client=self.http_client,
+            params=tool,
+        )
+    
+    def read_tool(self, *, tool_id: str) -> Tool:
+        """read_tool retrieves a new tool.
+        
+        Note: requires a `Management` API key."""
+        return read_tool(
+            client=self.http_client,
+            tool_id=tool_id,
+        )
+    
+    def uninstall_tool(self, *, tool_id: str):
+        """uninstall_tool deletes a tool by uninstalling it. Note: this does not
+        (yet) check whether those tools are used in procedures. Use with caution!
+        
+        Note: requires a `Management` API key."""
+        uninstall_tool(
+            client=self.http_client,
+            tool_id=tool_id,
+        )
+
+    def update_tool(self, *, tool: Tool) -> Tool:
+        """update_tool updates an existing tool. It allows callers to convert mock tools
+        into real tools, but not the other way around.
+        
+        Note: requires a `Management` API key."""
+        return update_tool(
+            client=self.http_client,
+            params=tool,
         )
 
     def parse_webhook(self, payload: str, signature_header: str) -> WebhookEvent:
