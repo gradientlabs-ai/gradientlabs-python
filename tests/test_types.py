@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime
 
-from gradient_labs.types import Conversation
+from gradient_labs.conversation import Conversation
 
 
 @pytest.fixture
