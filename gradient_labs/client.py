@@ -4,6 +4,7 @@ from typing import Any, List, Optional
 from .conversation import ParticipantType, Conversation, Attachment
 from ._conversation_assign import assign_conversation, AssignmentParams
 from ._conversation_finish import finish_conversation, FinishParams
+from ._conversation_read import read_conversation
 from ._http_client import HttpClient, API_BASE_URL
 from .webhook import Webhook, WebhookEvent
 
@@ -62,11 +63,10 @@ class Client:
 
     def read_conversation(self, *, conversation_id: str) -> Conversation:
         """Retrieves the conversation"""
-        body = self.http_client.get(
-            f"conversations/{conversation_id}",
-            {},
+        return read_conversation(
+            client=self.http_client,
+            conversation_id=conversation_id,
         )
-        return Conversation.from_dict(body)
 
     def start_conversation(
         self,
