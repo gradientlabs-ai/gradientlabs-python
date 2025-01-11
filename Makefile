@@ -1,18 +1,18 @@
-VERSION = $(shell poetry version | rev | cut -d ' ' -f 1)
+VERSION = $(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
 
-.PHONY: fmt test run install release
+.PHONY: fmt test install release version
 
 fmt:
-	@poetry run black ./
+	@uvx ruff format
 
 test:
-	@poetry run pytest tests
-
-run:
-	@poetry run python examples/run.py
+	@uv run pytest tests
 
 install:
-	@poetry install
+	@uv venv
+
+version:
+	@echo ${VERSION}
 
 release: 
 	@echo Shipping version ${VERSION}

@@ -117,7 +117,7 @@ class ConversationHandOffEvent:
     """
 
     # reason_code is the code that describes why the agent wants to hand off this
-	# conversation.
+    # conversation.
     reason_code: str
 
     # Reason is a human-legible description of the Reason code.

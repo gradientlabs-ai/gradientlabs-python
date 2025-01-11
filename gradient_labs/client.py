@@ -12,7 +12,6 @@ USER_AGENT = "Gradient Labs Python"
 
 
 class Client:
-
     def __init__(
         self,
         *,
