@@ -1,23 +1,13 @@
 ## Project setup
 
-This library uses Poetry, which can be installed via:
+This library uses [uv].
+
+[uv]: https://docs.astral.sh/uv/
+
+You can set up a virtual environment for this library with:
 
 ```bash
-brew install poetry
-```
-
-And then you can set up a virtual environment for this library with:
-
-```bash
-poetry install
-```
-
-## Running the examples
-
-The examples live in the `examples/` directory, which you can run with:
-
-```bash
-make run
+make install
 ```
 
 ## Publishing a new version
