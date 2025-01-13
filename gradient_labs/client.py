@@ -1,6 +1,7 @@
 from typing import Any, Optional
 
 from .conversation import Conversation
+from ._conversation_add_resource import add_resource
 from ._conversation_assign import assign_conversation, AssignmentParams
 from ._conversation_finish import finish_conversation, FinishParams
 from ._conversation_read import read_conversation
@@ -101,10 +102,28 @@ class Client:
         name: str,
         data: Any,
     ) -> None:
-        """Attaches a resource to the conversation."""
-        _ = self.http_client.put(
-            f"conversations/{conversation_id}/resources/{name}",
-            data,
+        """add_resource adds (or updates) a resource to the conversation (e.g. the
+        customer's order details) so the AI agent can handle customer-specific queries.
+
+        A resource can be any JSON document, as long it is smaller than 1MB. There
+        are no strict requirements on the format/structure of the document, but we
+        recommend making attribute names as descriptive as possible.
+
+        Over time, the AI agent will learn the structure of your resources - so while
+        it's fine to add new attributes, you may want to consider using new resource
+        names when removing attributes or changing the structure of your resources
+        significantly.
+
+        Resource names are case-insensitive and can be anything consisting of letters,
+        numbers, or any of the following characters: _ - + =.
+
+        Names should be descriptive handles that are the same for all conversations
+        (e.g. "order-details" and "user-profile") not unique identifiers."""
+        add_resource(
+            client=self.http_client,
+            conversation_id=conversation_id,
+            name=name,
+            data=data,
         )
 
     def upsert_hand_off_target(self, *, hand_off_target_id: str, name: str) -> None:
