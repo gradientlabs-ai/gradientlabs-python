@@ -3,6 +3,7 @@ from typing import Any, List, Optional
 
 from .conversation import ParticipantType, Conversation, Attachment
 from ._conversation_assign import assign_conversation, AssignmentParams
+from ._conversation_finish import finish_conversation, FinishParams
 from ._http_client import HttpClient, API_BASE_URL
 from .webhook import Webhook, WebhookEvent
 
@@ -43,15 +44,20 @@ class Client:
         )
 
     def finish_conversation(
-        self, *, conversation_id: str, timestamp: Optional[datetime] = None
+        self,
+        *,
+        conversation_id: str,
+        params: FinishParams,
     ) -> None:
-        """Finishes the conversation"""
-        body = {}
-        if timestamp is not None:
-            body["timestamp"] = HttpClient.localize(timestamp)
-        _ = self.http_client.put(
-            f"conversations/{conversation_id}/finish",
-            body,
+        """finish_conversation finishes a conversation.
+
+        A conversation finishes when it has come to its natural conclusion. This could be because
+        the customer's query has been resolved, a human agent or other automation has closed the chat,
+        or because the chat is being closed due to inactivity."""
+        finish_conversation(
+            client=self.http_client,
+            conversation_id=conversation_id,
+            params=params,
         )
 
     def read_conversation(self, *, conversation_id: str) -> Conversation:
