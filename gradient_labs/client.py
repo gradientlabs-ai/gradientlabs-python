@@ -1,11 +1,12 @@
-from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, Optional
 
-from .conversation import ParticipantType, Conversation, Attachment
+from .conversation import Conversation
 from ._conversation_assign import assign_conversation, AssignmentParams
 from ._conversation_finish import finish_conversation, FinishParams
 from ._conversation_read import read_conversation
 from ._conversation_start import start_conversation, StartConversationParams
+from ._http_client import HttpClient, API_BASE_URL
+from ._message import add_message, AddMessageParams, Message
 from ._http_client import HttpClient, API_BASE_URL
 from .webhook import Webhook, WebhookEvent
 
@@ -83,29 +84,14 @@ class Client:
     def add_message(
         self,
         *,
-        message_id: str,
         conversation_id: str,
-        body: str,
-        participant_id: str,
-        participant_type: ParticipantType,
-        created: Optional[datetime] = None,
-        attachments: List[Attachment] = None,
-    ) -> None:
+        params: AddMessageParams,
+    ) -> Message:
         """Adds a message to a conversation."""
-        body = {
-            "id": message_id,
-            "body": body,
-            "participant_id": participant_id,
-            "participant_type": participant_type,
-        }
-        if created is not None:
-            body["created"] = HttpClient.localize(created)
-        if attachments is not None and len(attachments) != 0:
-            body["attachments"] = [a.to_dict() for a in attachments]
-
-        _ = self.http_client.post(
-            f"conversations/{conversation_id}/messages",
-            body,
+        return add_message(
+            client=self.client,
+            conversation_id=conversation_id,
+            params=params,
         )
 
     def add_resource(
