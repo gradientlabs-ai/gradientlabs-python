@@ -5,6 +5,7 @@ from .conversation import ParticipantType, Conversation, Attachment
 from ._conversation_assign import assign_conversation, AssignmentParams
 from ._conversation_finish import finish_conversation, FinishParams
 from ._conversation_read import read_conversation
+from ._conversation_start import start_conversation, StartConversationParams
 from ._http_client import HttpClient, API_BASE_URL
 from .webhook import Webhook, WebhookEvent
 
@@ -71,27 +72,13 @@ class Client:
     def start_conversation(
         self,
         *,
-        conversation_id: str,
-        customer_id: str,
-        channel: str,
-        created: Optional[datetime] = None,
-        metadata: Optional[Any] = None,
+        params: StartConversationParams,
     ) -> Conversation:
         """Starts a conversation."""
-        body = {
-            "id": conversation_id,
-            "customer_id": customer_id,
-            "channel": channel,
-        }
-        if metadata is not None:
-            body["metadata"] = metadata
-        if created is not None:
-            body["created"] = HttpClient.localize(created)
-        rsp = self.http_client.post(
-            "conversations",
-            body,
+        return start_conversation(
+            client=self.http_client,
+            params=params,
         )
-        return Conversation.from_dict(rsp)
 
     def add_message(
         self,
