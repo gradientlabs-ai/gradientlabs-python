@@ -1,33 +1,33 @@
 from datetime import datetime
-from typing import Any, List, Optional, Callable
+from typing import Any, List, Optional
 
-import requests
-from pytz import UTC
-from .errors import ResponseError
 from .webhook import Webhook, WebhookEvent
 from .types import ParticipantType, Conversation, Attachment
 
-API_BASE_URL = "https://api.gradient-labs.ai"
-USER_AGENT = "Gradient Labs Python"
+from ._http_client import HttpClient, API_BASE_URL
 
 
 class Client:
+    """Client is the client for the Gradient Labs
+    public api. For full details, please refer to the online docs:
+
+    https://api-docs.gradient-labs.ai/
+    """
+
     def __init__(
         self,
         *,
         api_key: str,
         signing_key: Optional[str] = None,
-        base_url: str = API_BASE_URL,
-        timeout: int = None,
+        base_url: Optional[str] = API_BASE_URL,
+        timeout: Optional[int] = None,
     ):
-        self.api_key = api_key
-        self.base_url = base_url
-        self.timeout = timeout
+        self.http_client = HttpClient(
+            api_key=api_key,
+            base_url=base_url,
+            timeout=timeout,
+        )
         self.signing_key = signing_key
-
-    @classmethod
-    def localize(cls, timestamp: datetime) -> str:
-        return UTC.localize(timestamp).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     def assign_conversation(
         self,
@@ -42,8 +42,8 @@ class Client:
         if assignee_id:
             body["assignee_id"] = assignee_id
         if timestamp:
-            body["timestamp"] = self.localize(timestamp)
-        _ = self._put(
+            body["timestamp"] = HttpClient.localize(timestamp)
+        _ = self.http_client.put(
             f"conversations/{conversation_id}/assignee",
             body,
         )
@@ -54,15 +54,15 @@ class Client:
         """Finishes the conversation"""
         body = {}
         if timestamp is not None:
-            body["timestamp"] = self.localize(timestamp)
-        _ = self._put(
+            body["timestamp"] = HttpClient.localize(timestamp)
+        _ = self.http_client.put(
             f"conversations/{conversation_id}/finish",
             body,
         )
 
     def read_conversation(self, *, conversation_id: str) -> Conversation:
         """Retrieves the conversation"""
-        body = self._get(
+        body = self.http_client.get(
             f"conversations/{conversation_id}",
             {},
         )
@@ -86,8 +86,8 @@ class Client:
         if metadata is not None:
             body["metadata"] = metadata
         if created is not None:
-            body["created"] = self.localize(created)
-        rsp = self._post(
+            body["created"] = HttpClient.localize(created)
+        rsp = self.http_client.post(
             "conversations",
             body,
         )
@@ -112,11 +112,11 @@ class Client:
             "participant_type": participant_type,
         }
         if created is not None:
-            body["created"] = self.localize(created)
+            body["created"] = HttpClient.localize(created)
         if attachments is not None and len(attachments) != 0:
             body["attachments"] = [a.to_dict() for a in attachments]
 
-        _ = self._post(
+        _ = self.http_client.post(
             f"conversations/{conversation_id}/messages",
             body,
         )
@@ -129,14 +129,14 @@ class Client:
         data: Any,
     ) -> None:
         """Attaches a resource to the conversation."""
-        _ = self._put(
+        _ = self.http_client.put(
             f"conversations/{conversation_id}/resources/{name}",
             data,
         )
 
     def upsert_hand_off_target(self, *, hand_off_target_id: str, name: str) -> None:
         """Inserts or updates a hand-off target."""
-        _ = self._post(
+        _ = self.http_client.post(
             f"hand-off-targets",
             {
                 "id": hand_off_target_id,
@@ -150,29 +150,3 @@ class Client:
             signature_header=signature_header,
             signing_key=self.signing_key,
         )
-
-    def _post(self, path: str, body: Any):
-        return self._api_call(requests.post, path, body)
-
-    def _put(self, path: str, body: Any):
-        return self._api_call(requests.put, path, body)
-
-    def _get(self, path: str, body: Any):
-        return self._api_call(requests.get, path, body)
-
-    def _api_call(self, request_func: Callable, path: str, body: Any):
-        url = f"{self.base_url}/{path}"
-        rsp = request_func(
-            url,
-            json=body,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-                "User-Agent": USER_AGENT,
-            },
-            timeout=self.timeout,
-        )
-        if rsp.status_code < 200 or rsp.status_code > 299:
-            raise ResponseError(rsp)
-        if len(rsp.content) != 0:
-            return rsp.json()
