@@ -6,6 +6,7 @@ from ._conversation_assign import assign_conversation, AssignmentParams
 from ._conversation_finish import finish_conversation, FinishParams
 from ._conversation_read import read_conversation
 from ._conversation_start import start_conversation, StartConversationParams
+from ._handoff_target_upsert import upsert_hand_off_target, UpsertHandOffTargetParams
 from ._http_client import HttpClient, API_BASE_URL
 from ._message import add_message, AddMessageParams, Message
 from ._http_client import HttpClient, API_BASE_URL
@@ -126,14 +127,13 @@ class Client:
             data=data,
         )
 
-    def upsert_hand_off_target(self, *, hand_off_target_id: str, name: str) -> None:
-        """Inserts or updates a hand-off target."""
-        _ = self.http_client.post(
-            f"hand-off-targets",
-            {
-                "id": hand_off_target_id,
-                "name": name,
-            },
+    def upsert_hand_off_target(self, *, params: UpsertHandOffTargetParams) -> None:
+        """upsert_hand_off_target inserts or updates a hand-off target.
+
+        Note: requires a `Management` API key."""
+        upsert_hand_off_target(
+            client=self.http_client,
+            params=params,
         )
 
     def parse_webhook(self, payload: str, signature_header: str) -> WebhookEvent:
