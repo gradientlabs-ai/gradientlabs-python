@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import Any, List, Optional
 
-from .webhook import Webhook, WebhookEvent
-from .types import ParticipantType, Conversation, Attachment
-
+from .conversation import ParticipantType, Conversation, Attachment
+from ._conversation_assign import assign_conversation, AssignmentParams
 from ._http_client import HttpClient, API_BASE_URL
+from .webhook import Webhook, WebhookEvent
 
 
 class Client:
@@ -33,19 +33,13 @@ class Client:
         self,
         *,
         conversation_id: str,
-        participant_type: ParticipantType,
-        assignee_id: Optional[str] = None,
-        timestamp: Optional[datetime] = None,
+        params: AssignmentParams,
     ) -> None:
         """Assigns a conversation to the given participant."""
-        body = {"assignee_type": participant_type}
-        if assignee_id:
-            body["assignee_id"] = assignee_id
-        if timestamp:
-            body["timestamp"] = HttpClient.localize(timestamp)
-        _ = self.http_client.put(
-            f"conversations/{conversation_id}/assignee",
-            body,
+        assign_conversation(
+            client=self.client,
+            conversation_id=conversation_id,
+            params=params,
         )
 
     def finish_conversation(

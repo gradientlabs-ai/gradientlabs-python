@@ -6,7 +6,7 @@ from hashlib import sha256
 from typing import Optional
 from pytz import UTC
 from .errors import SignatureVerificationError
-from .types import *
+from .conversation import *
 
 
 @dataclass(frozen=True)
