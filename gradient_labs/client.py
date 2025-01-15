@@ -10,6 +10,7 @@ from ._conversation_assign import assign_conversation, AssignmentParams
 from ._conversation_cancel import cancel_conversation, CancelParams
 from ._conversation_event import add_conversation_event, EventParams
 from ._conversation_finish import finish_conversation, FinishParams
+from ._conversation_rate import rate_conversation, RatingParams
 from ._conversation_read import read_conversation
 from ._conversation_start import start_conversation, StartConversationParams
 
@@ -114,6 +115,14 @@ class Client:
             params=params,
         )
 
+    def rate_conversation(self, *, conversation_id: str, params: RatingParams) -> None:
+        """rate_conversation submits a customer (CSAT) rating for a conversation."""
+        rate_conversation(
+            client=self.http_client,
+            conversation_id=conversation_id,
+            params=params,
+        )
+
     def read_conversation(self, *, conversation_id: str) -> Conversation:
         """Retrieves the conversation"""
         return read_conversation(
@@ -199,20 +208,20 @@ class Client:
             client=self.http_client,
             params=tool,
         )
-    
+
     def read_tool(self, *, tool_id: str) -> Tool:
         """read_tool retrieves a new tool.
-        
+
         Note: requires a `Management` API key."""
         return read_tool(
             client=self.http_client,
             tool_id=tool_id,
         )
-    
+
     def uninstall_tool(self, *, tool_id: str):
         """uninstall_tool deletes a tool by uninstalling it. Note: this does not
         (yet) check whether those tools are used in procedures. Use with caution!
-        
+
         Note: requires a `Management` API key."""
         uninstall_tool(
             client=self.http_client,
@@ -222,7 +231,7 @@ class Client:
     def update_tool(self, *, tool: Tool) -> Tool:
         """update_tool updates an existing tool. It allows callers to convert mock tools
         into real tools, but not the other way around.
-        
+
         Note: requires a `Management` API key."""
         return update_tool(
             client=self.http_client,
