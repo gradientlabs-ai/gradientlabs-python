@@ -30,7 +30,7 @@ class HttpClient:
 
     def get(self, path: str, body: Any):
         return self._api_call(requests.get, path, body)
-    
+
     def delete(self, path: str, body: Any):
         return self._api_call(requests.delete, path, body)
 

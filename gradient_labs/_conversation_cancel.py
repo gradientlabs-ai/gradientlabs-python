@@ -26,7 +26,7 @@ def cancel_conversation(
         body["timestamp"] = HttpClient.localize(params.timestamp)
     if params.reason is not None:
         body["reason"] = params.reason
-    
+
     _ = client.put(
         f"conversations/{conversation_id}/cancel",
         body=body,
