@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config
 from marshmallow import fields
 
+from .article import Visibility, PublicationStatus
+
 from ._http_client import HttpClient
 
 
@@ -25,10 +27,10 @@ class ArticleTopicUpsertParams:
 
     # visibility describes who can see this topic, ranging from the
     # whole world (public) through to employees only (internal).
-    visibility: str
+    visibility: Visibility
 
     # status describes whether this topic is published or not.
-    status: str
+    status: PublicationStatus
 
     # data optionally gives additional meta-data about the topic.
     data: Optional[dict] = {}
