@@ -17,6 +17,11 @@ from ._conversation_start import start_conversation, StartConversationParams
 from ._handoff_target_upsert import upsert_hand_off_target, UpsertHandOffTargetParams
 from ._handoff_targets import list_handoff_targets, HandOffTargets
 
+from .procedure import Procedure
+from ._procedure_read import read_procedure
+from ._procedure_list import list_procedures, ProcedureListParams, ProcedureListResponse
+from ._procedure_set_limit import set_procedure_limit, ProcedureLimitParams
+
 from ._tool_create import create_tool, Tool
 from ._tool_read import read_tool
 from ._tool_uninstall import uninstall_tool
@@ -199,6 +204,36 @@ class Client:
 
         Note: requires a `Management` API key."""
         return list_handoff_targets(client=self.http_client)
+
+    def read_procedure(self, *, procedure_id: str) -> Procedure:
+        """read_procedure reads a procedure.
+
+        Note: requires a `Management` API key."""
+        return read_procedure(
+            client=self.http_client,
+            procedure_id=procedure_id,
+        )
+
+    def list_procedures(self, *, params: ProcedureListParams) -> ProcedureListResponse:
+        """list_procedures lists procedures.
+
+        Note: requires a `Management` API key."""
+        return list_procedures(
+            client=self.http_client,
+            params=params,
+        )
+
+    def set_procedure_limit(
+        self, *, procedure_id: str, params: ProcedureLimitParams
+    ) -> Procedure:
+        """set_procedure_limit updates the daily usage limit of a procedure.
+
+        Note: requires a `Management` API key."""
+        return set_procedure_limit(
+            client=self.http_client,
+            procedure_id=procedure_id,
+            params=params,
+        )
 
     def create_tool(self, *, tool: Tool) -> Tool:
         """create_tool creates a new tool.
