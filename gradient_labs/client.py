@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, List
 
 from ._article_topic_upsert import upsert_article_topic, ArticleTopicUpsertParams
 from ._article_upsert import upsert_article, UpsertArticleParams
@@ -24,6 +24,7 @@ from ._procedure_set_limit import set_procedure_limit, ProcedureLimitParams
 
 from ._tool_create import create_tool, Tool
 from ._tool_read import read_tool
+from ._tool_list import list_tools
 from ._tool_uninstall import uninstall_tool
 from ._tool_update import update_tool
 
@@ -252,6 +253,9 @@ class Client:
             client=self.http_client,
             tool_id=tool_id,
         )
+
+    def list_tools(self) -> List[Tool]:
+        return list_tools()
 
     def uninstall_tool(self, *, tool_id: str):
         """uninstall_tool deletes a tool by uninstalling it. Note: this does not

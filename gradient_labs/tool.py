@@ -23,13 +23,20 @@ class BodyEncoding(str, Enum):
 
 
 @dataclass_json
+@dataclass
+class ParameterOption:
+    value: str
+    text: str
+
+
+@dataclass_json
 @dataclass(frozen=True)
 class ToolParameter:
     name: str
     description: str
     type: ParameterType
     required: Optional[bool] = False
-    options: Optional[List[str]] = []
+    options: Optional[List[ParameterOption]] = []
 
 
 @dataclass_json
