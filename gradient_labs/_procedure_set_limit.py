@@ -23,7 +23,7 @@ def set_procedure_limit(
     *, client: HttpClient, procedure_id: str, params: ProcedureLimitParams
 ) -> Procedure:
     body = client.post(
-        path=f"procedures/{procedure_id}/limit",
+        path=f"procedure/{procedure_id}/limit",
         body=params.to_dict(),
     )
     return Procedure.from_dict(body)

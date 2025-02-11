@@ -6,7 +6,7 @@ def read_procedure(*, client: HttpClient, procedure_id: str) -> Procedure:
     """read_procedure reads a procedure.
     Note: requires a `Management` API key."""
     body = client.get(
-        path=f"procedures/{procedure_id}",
+        path=f"procedure/{procedure_id}",
         body={},
     )
     return Procedure.from_dict(body)
