@@ -130,13 +130,13 @@ class AgentMessageEvent:
     Text of the agent's message.
     """
 
-    total: int
+    total: Optional[int] = 0
     """
     total identifies the number of agent messages that have been
 	produced in the current turn.
     """
 
-    sequence: int
+    sequence: Optional[int] = 0
     """
     sequence identifies which agent message this is in the current turn.
     """
