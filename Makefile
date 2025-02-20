@@ -1,6 +1,6 @@
 VERSION = $(shell grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
 
-.PHONY: fmt test install release version
+.PHONY: fmt test install release version release-failed
 
 fmt:
 	@uvx ruff format
@@ -18,3 +18,8 @@ release:
 	@echo Shipping version ${VERSION}
 	@git tag v${VERSION}
 	@git push origin v${VERSION}
+
+release-failed:
+	@echo Removing tags for version ${VERSION}
+	@git push origin --delete v${VERSION}
+	@git tag --delete v${VERSION}
