@@ -57,7 +57,9 @@ class TestParseEvent:
                 "chat_entrypoint": "home-page"
               }
             },
-            "body": "Sure, I can help you set up your toaster oven!"
+            "body": "Sure, I can help you set up your toaster oven!",
+            "total": 1,
+            "sequence": 1
           }
         }
         """
@@ -86,6 +88,8 @@ class TestParseEvent:
                     },
                 ),
                 body="Sure, I can help you set up your toaster oven!",
+                total=1,
+                sequence=1,
             ),
         )
 
@@ -163,7 +167,9 @@ class TestParseEvent:
               "metadata": {
                 "chat_entrypoint": "home-page"
               }
-            }
+            },
+            "reason": "The customer asked for this.",
+            "reason_code": "customer-request"
           }
         }
         """
@@ -191,6 +197,8 @@ class TestParseEvent:
                         "chat_entrypoint": "home-page",
                     },
                 ),
+                reason="The customer asked for this.",
+                reason_code="customer-request",
             ),
         )
 

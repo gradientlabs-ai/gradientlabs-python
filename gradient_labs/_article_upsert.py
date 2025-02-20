@@ -1,4 +1,5 @@
 from typing import Optional, Any
+from collections import defaultdict
 from datetime import datetime
 
 from dataclasses import dataclass, field
@@ -39,9 +40,6 @@ class UpsertArticleParams:
     # status describes whether this article is published or not.
     status: PublicationStatus
 
-    # Data optionally gives additional meta-data about the article.
-    data: Optional[Any] = {}
-
     # created is when the topic was first created.
     created: datetime = field(
         metadata=config(
@@ -59,6 +57,9 @@ class UpsertArticleParams:
             mm_field=fields.DateTime(format="iso"),
         )
     )
+
+    # data optionally gives additional meta-data about the article.
+    data: Optional[Any] = field(default_factory=lambda: defaultdict(dict))
 
 
 def upsert_article(*, client: HttpClient, params: UpsertArticleParams) -> None:

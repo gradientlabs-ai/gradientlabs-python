@@ -1,4 +1,5 @@
 from typing import Optional
+from collections import defaultdict
 from datetime import datetime
 
 from dataclasses import dataclass, field
@@ -32,9 +33,6 @@ class ArticleTopicUpsertParams:
     # status describes whether this topic is published or not.
     status: PublicationStatus
 
-    # data optionally gives additional meta-data about the topic.
-    data: Optional[dict] = {}
-
     # created is when the topic was first created.
     created: datetime = field(
         metadata=config(
@@ -52,6 +50,9 @@ class ArticleTopicUpsertParams:
             mm_field=fields.DateTime(format="iso"),
         )
     )
+
+    # data optionally gives additional meta-data about the topic.
+    data: Optional[dict] = field(default_factory=lambda: defaultdict(dict))
 
 
 def upsert_article_topic(
