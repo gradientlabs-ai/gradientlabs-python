@@ -51,7 +51,9 @@ class ToolWebhookConfiguration:
 class ActionHTTPBodyDefinition:
     encoding: BodyEncoding
     json_template: Optional[str] = ""
-    form_field_templates: Optional[Dict[str, str]] = field(default_factory=lambda: defaultdict(dict))
+    form_field_templates: Optional[Dict[str, str]] = field(
+        default_factory=lambda: defaultdict(dict)
+    )
 
 
 @dataclass_json
