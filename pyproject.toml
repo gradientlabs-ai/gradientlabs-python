@@ -1,5 +1,5 @@
 [project]
-name = "python-client"
+name = "gradient-labs"
 version = "0.9.1"
 description = "Python bindings for the Gradient Labs API"
 readme = "README.md"
@@ -12,3 +12,7 @@ dependencies = [
     "requests>=2.32.3",
     "ruff>=0.9.1",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
