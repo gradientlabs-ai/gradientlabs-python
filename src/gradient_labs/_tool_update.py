@@ -1,8 +1,8 @@
 from ._http_client import HttpClient
-from .tool import Tool
+from .tool import Tool, ToolUpdateParams
 
 
-def update_tool(*, client: HttpClient, params: Tool) -> Tool:
+def update_tool(*, client: HttpClient, params: ToolUpdateParams) -> Tool:
     """update_tool updates an existing tool. It allows callers to convert mock tools
     into real tools, but not the other way around.
 
