@@ -48,7 +48,7 @@ class ToolWebhookConfiguration:
 
 @dataclass_json
 @dataclass(frozen=True)
-class ActionHTTPBodyDefinition:
+class HTTPBodyDefinition:
     encoding: BodyEncoding
     json_template: Optional[str] = ""
     form_field_templates: Optional[Dict[str, str]] = field(
@@ -58,11 +58,11 @@ class ActionHTTPBodyDefinition:
 
 @dataclass_json
 @dataclass(frozen=True)
-class ActionHTTPDefinition:
+class HTTPDefinition:
     method: str
     url_template: str
     header_templates: Optional[Dict[str, str]] = None
-    body: Optional[ActionHTTPBodyDefinition] = None
+    body: Optional[HTTPBodyDefinition] = None
 
 
 @dataclass_json
@@ -70,6 +70,14 @@ class ActionHTTPDefinition:
 class Tool:
     id: str
     name: str
+    description: str
+    parameters: List[ToolParameter] = field(default_factory=lambda: [])
+    webhook: Optional[ToolWebhookConfiguration] = None
+
+@dataclass_json
+@dataclass(frozen=True)
+class ToolUpdateParams:
+    id: str
     description: str
     parameters: List[ToolParameter] = field(default_factory=lambda: [])
     webhook: Optional[ToolWebhookConfiguration] = None

@@ -25,10 +25,11 @@ from ._procedure_set_limit import set_procedure_limit, ProcedureLimitParams
 from ._tool_create import create_tool, Tool
 from ._tool_read import read_tool
 from ._tool_list import list_tools
-from ._tool_uninstall import uninstall_tool
+from ._tool_delete import delete_tool
 from ._tool_update import update_tool
 
 from ._http_client import HttpClient, API_BASE_URL
+from .tool import ToolUpdateParams
 from .webhook import Webhook, WebhookEvent
 
 
@@ -257,17 +258,16 @@ class Client:
     def list_tools(self) -> List[Tool]:
         return list_tools()
 
-    def uninstall_tool(self, *, tool_id: str):
-        """uninstall_tool deletes a tool by uninstalling it. Note: this does not
-        (yet) check whether those tools are used in procedures. Use with caution!
+    def delete_tool(self, *, tool_id: str):
+        """delete_tool deletes a tool. Note: will not allow to delete a tool used in an active procedure.
 
         Note: requires a `Management` API key."""
-        uninstall_tool(
+        delete_tool(
             client=self.http_client,
             tool_id=tool_id,
         )
 
-    def update_tool(self, *, tool: Tool) -> Tool:
+    def update_tool(self, *, tool: ToolUpdateParams) -> Tool:
         """update_tool updates an existing tool. It allows callers to convert mock tools
         into real tools, but not the other way around.
 
