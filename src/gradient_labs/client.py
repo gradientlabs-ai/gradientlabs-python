@@ -56,6 +56,7 @@ class Client:
         self.signing_key = signing_key
 
     def upsert_article_topic(self, *, params: ArticleTopicUpsertParams) -> None:
+        """upsert_article_topic inserts or updates a help article topic"""
         upsert_article_topic(
             client=self.http_client,
             params=params,
@@ -76,7 +77,7 @@ class Client:
     ) -> None:
         """Assigns a conversation to the given participant."""
         assign_conversation(
-            client=self.client,
+            client=self.http_client,
             conversation_id=conversation_id,
             params=params,
         )
@@ -156,7 +157,7 @@ class Client:
     ) -> Message:
         """Adds a message to a conversation."""
         return add_message(
-            client=self.client,
+            client=self.http_client,
             conversation_id=conversation_id,
             params=params,
         )
@@ -189,7 +190,7 @@ class Client:
             client=self.http_client,
             conversation_id=conversation_id,
             name=name,
-            data=data,
+            resource=data,
         )
 
     def upsert_hand_off_target(self, *, params: UpsertHandOffTargetParams) -> None:
@@ -256,7 +257,12 @@ class Client:
         )
 
     def list_tools(self) -> List[Tool]:
-        return list_tools()
+        """list_tools lists all tools.
+
+        Note: requires a `Management` API key."""
+        return list_tools(
+            client=self.http_client,
+        )
 
     def delete_tool(self, *, tool_id: str):
         """delete_tool deletes a tool. Note: will not allow to delete a tool used in an active procedure.
@@ -278,6 +284,7 @@ class Client:
         )
 
     def parse_webhook(self, payload: str, signature_header: str) -> WebhookEvent:
+        """parse_webhook parses a webhook event. """
         return Webhook.parse_event(
             payload=payload,
             signature_header=signature_header,

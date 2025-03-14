@@ -3,8 +3,6 @@ from collections import defaultdict
 from enum import Enum
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
-from typing import Any, Dict
-
 
 class ParameterType(str, Enum):
     """ParameterType determines the data type of a parameter."""
@@ -73,6 +71,7 @@ class Tool:
     description: str
     parameters: List[ToolParameter] = field(default_factory=lambda: [])
     webhook: Optional[ToolWebhookConfiguration] = None
+
 
 @dataclass_json
 @dataclass(frozen=True)
