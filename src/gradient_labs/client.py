@@ -22,14 +22,15 @@ from ._procedure_read import read_procedure
 from ._procedure_list import list_procedures, ProcedureListParams, ProcedureListResponse
 from ._procedure_set_limit import set_procedure_limit, ProcedureLimitParams
 
-from ._tool_create import create_tool, Tool
-from ._tool_read import read_tool
-from ._tool_list import list_tools
+from ._tool_create import create_tool
 from ._tool_delete import delete_tool
+from ._tool_execute import execute_tool, ToolExecuteParams, ToolExecuteResult
+from ._tool_list import list_tools
+from ._tool_read import read_tool
 from ._tool_update import update_tool
 
 from ._http_client import HttpClient, API_BASE_URL
-from .tool import ToolUpdateParams
+from .tool import *
 from .webhook import Webhook, WebhookEvent
 
 
@@ -247,6 +248,24 @@ class Client:
             params=tool,
         )
 
+    def delete_tool(self, *, tool_id: str):
+        """delete_tool deletes a tool. Note: will not allow to delete a tool used in an active procedure.
+
+        Note: requires a `Management` API key."""
+        delete_tool(
+            client=self.http_client,
+            tool_id=tool_id,
+        )
+
+    def execute_tool(self, *, params: ToolExecuteParams) -> ToolExecuteResult:
+        """execute_tool executes a tool.
+
+        Note: requires a `Management` API key."""
+        return execute_tool(
+            client=self.http_client,
+            params=params,
+        )
+
     def read_tool(self, *, tool_id: str) -> Tool:
         """read_tool retrieves a new tool.
 
@@ -264,27 +283,18 @@ class Client:
             client=self.http_client,
         )
 
-    def delete_tool(self, *, tool_id: str):
-        """delete_tool deletes a tool. Note: will not allow to delete a tool used in an active procedure.
-
-        Note: requires a `Management` API key."""
-        delete_tool(
-            client=self.http_client,
-            tool_id=tool_id,
-        )
-
-    def update_tool(self, *, tool: ToolUpdateParams) -> Tool:
+    def update_tool(self, *, params: ToolUpdateParams) -> Tool:
         """update_tool updates an existing tool. It allows callers to convert mock tools
         into real tools, but not the other way around.
 
         Note: requires a `Management` API key."""
         return update_tool(
             client=self.http_client,
-            params=tool,
+            params=params,
         )
 
     def parse_webhook(self, payload: str, signature_header: str) -> WebhookEvent:
-        """parse_webhook parses a webhook event. """
+        """parse_webhook parses a webhook event."""
         return Webhook.parse_event(
             payload=payload,
             signature_header=signature_header,
