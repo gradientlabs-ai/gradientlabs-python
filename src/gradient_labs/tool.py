@@ -4,6 +4,7 @@ from enum import Enum
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 
+
 class ParameterType(str, Enum):
     """ParameterType determines the data type of a parameter."""
 
@@ -66,11 +67,12 @@ class HTTPDefinition:
 @dataclass_json
 @dataclass(frozen=True)
 class Tool:
-    id: str
     name: str
     description: str
+    id: Optional[str] = None
     parameters: List[ToolParameter] = field(default_factory=lambda: [])
     webhook: Optional[ToolWebhookConfiguration] = None
+    http: Optional[HTTPDefinition] = None
 
 
 @dataclass_json
@@ -80,3 +82,4 @@ class ToolUpdateParams:
     description: str
     parameters: List[ToolParameter] = field(default_factory=lambda: [])
     webhook: Optional[ToolWebhookConfiguration] = None
+    mock: Optional[bool] = False
