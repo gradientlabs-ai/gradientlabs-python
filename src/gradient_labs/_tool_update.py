@@ -8,7 +8,7 @@ def update_tool(*, client: HttpClient, params: ToolUpdateParams) -> Tool:
 
     Note: requires a `Management` API key."""
     rsp = client.put(
-        path="tools/{tool_id}",
+        path="tools/{params.id}",
         body=params.to_dict(),
     )
 

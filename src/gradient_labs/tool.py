@@ -3,7 +3,6 @@ from collections import defaultdict
 from enum import Enum
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
-from typing import Any, Dict
 
 
 class ParameterType(str, Enum):
@@ -68,11 +67,13 @@ class HTTPDefinition:
 @dataclass_json
 @dataclass(frozen=True)
 class Tool:
-    id: str
     name: str
     description: str
+    id: Optional[str] = None
     parameters: List[ToolParameter] = field(default_factory=lambda: [])
     webhook: Optional[ToolWebhookConfiguration] = None
+    http: Optional[HTTPDefinition] = None
+
 
 @dataclass_json
 @dataclass(frozen=True)
@@ -81,3 +82,4 @@ class ToolUpdateParams:
     description: str
     parameters: List[ToolParameter] = field(default_factory=lambda: [])
     webhook: Optional[ToolWebhookConfiguration] = None
+    mock: Optional[bool] = False

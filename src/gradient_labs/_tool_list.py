@@ -9,6 +9,8 @@ from .tool import Tool
 @dataclass_json
 @dataclass(frozen=True)
 class ToolList:
+    """ToolList is the response from the list_tools endpoint."""
+
     # tools contains the list of tools.
     tools: List[Tool]
 
