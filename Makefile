@@ -18,6 +18,7 @@ release:
 	@echo Shipping version ${VERSION}
 	@git tag v${VERSION}
 	@git push origin v${VERSION}
+	@echo Publish workflow running: https://github.com/gradientlabs-ai/gradient-labs/actions
 
 release-failed:
 	@echo Removing tags for version ${VERSION}
