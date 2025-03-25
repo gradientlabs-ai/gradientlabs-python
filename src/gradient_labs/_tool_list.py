@@ -20,7 +20,7 @@ def list_tools(*, client: HttpClient) -> List[Tool]:
     Note: requires a `Management` API key."""
     rsp = client.get(
         path="tools",
-        body={},
+        body=None,
     )
 
     rsp = ToolList.from_dict(rsp)

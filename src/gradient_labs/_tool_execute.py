@@ -42,5 +42,5 @@ def execute_tool(*, client: HttpClient, params: ToolExecuteParams) -> ToolExecut
     """execute_tool executes a tool.
 
     Note: requires a `Management` API key."""
-    rsp = client.post(path=f"/tools/{params.id}/execute", body=params.to_dict())
+    rsp = client.post(path=f"tools/{params.id}/execute", body=params.to_dict())
     return ToolExecuteResult.from_dict(rsp)

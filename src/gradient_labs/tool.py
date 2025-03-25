@@ -1,5 +1,4 @@
 from typing import Optional, List, Dict
-from collections import defaultdict
 from enum import Enum
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
@@ -50,9 +49,7 @@ class ToolWebhookConfiguration:
 class HTTPBodyDefinition:
     encoding: BodyEncoding
     json_template: Optional[str] = ""
-    form_field_templates: Optional[Dict[str, str]] = field(
-        default_factory=lambda: defaultdict(dict)
-    )
+    form_field_templates: Optional[Dict[str, str]] = None
 
 
 @dataclass_json
@@ -82,4 +79,5 @@ class ToolUpdateParams:
     description: str
     parameters: List[ToolParameter] = field(default_factory=lambda: [])
     webhook: Optional[ToolWebhookConfiguration] = None
+    http: Optional[HTTPDefinition] = None
     mock: Optional[bool] = False

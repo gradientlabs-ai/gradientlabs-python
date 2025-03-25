@@ -7,15 +7,19 @@ from gradient_labs import (
     ParameterType,
     ParameterOption,
     HTTPDefinition,
+    HTTPBodyDefinition,
+    BodyEncoding,
 )
 
 
 def main():
-    client = Client(api_key=os.environ["GLABS_MGTMT_KEY"])
-
+    client = Client(
+        api_key=os.environ["GLABS_LOCAL_MGMT_KEY"],
+        base_url="http://127.0.0.1:4000",
+    )
     tool = client.create_tool(
         tool=Tool(
-            name="Launch the rocket",
+            name="Launch",
             description="Send the rocket into the stratosphere",
             parameters=[
                 ToolParameter(
@@ -32,8 +36,11 @@ def main():
             ],
             http=HTTPDefinition(
                 method="POST",
-                url_template="https://api.rocket.com/launch",
-                header_templates={"Content-Type": "application/json"},
+                url_template="https://a0e6-2a00-23c4-ca02-4601-4d6f-e46c-76bc-3167.ngrok-free.app/launch",
+                body=HTTPBodyDefinition(
+                    encoding=BodyEncoding.JSON.value,
+                    json_template="{\"speed\":\"${params.speed}\"}",
+                ),
             ),
         )
     )
