@@ -24,7 +24,7 @@ from ._procedure_set_limit import set_procedure_limit, ProcedureLimitParams
 
 from ._tool_create import create_tool
 from ._tool_delete import delete_tool
-from ._tool_execute import execute_tool, ToolExecuteParams, ToolExecuteResult
+from ._tool_execute import execute_tool, ToolExecuteParams, Argument, ToolExecuteResult
 from ._tool_list import list_tools
 from ._tool_read import read_tool
 from ._tool_update import update_tool
