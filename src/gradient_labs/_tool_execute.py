@@ -34,8 +34,8 @@ class ToolExecuteResult:
     # id identifies the tool.
     id: str
 
-    # raw is the JSON-encoded result of the tool execution.
-    raw: Any
+    # result is the JSON-encoded result of the tool execution.
+    result: Any
 
 
 def execute_tool(*, client: HttpClient, params: ToolExecuteParams) -> ToolExecuteResult:
