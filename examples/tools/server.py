@@ -5,15 +5,17 @@ import logging
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 class LaunchRequest(BaseModel):
     speed: str
 
+
 app = FastAPI(title="Launch rocket api")
+
 
 @app.post("/launch")
 async def launch(request: LaunchRequest):
@@ -26,7 +28,7 @@ async def launch(request: LaunchRequest):
             "status": "success",
             "data": {
                 "speed": request.speed,
-            }
+            },
         }
     except Exception as e:
         logger.error(f"Error during launch: {str(e)}", exc_info=True)

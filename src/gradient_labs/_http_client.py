@@ -51,7 +51,7 @@ class HttpClient:
             },
             timeout=self.timeout,
         )
-        
+
         if rsp.status_code < 200 or rsp.status_code > 299:
             raise ResponseError(rsp)
         if len(rsp.content) != 0:
