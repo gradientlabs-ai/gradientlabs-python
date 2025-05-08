@@ -11,7 +11,7 @@ from ._conversation_cancel import cancel_conversation, CancelParams
 from ._conversation_event import add_conversation_event, EventParams
 from ._conversation_finish import finish_conversation, FinishParams
 from ._conversation_rate import rate_conversation, RatingParams
-from ._conversation_read import read_conversation
+from ._conversation_read import read_conversation, ReadParams
 from ._conversation_start import start_conversation, StartConversationParams
 
 from ._handoff_target_upsert import upsert_hand_off_target, UpsertHandOffTargetParams
@@ -24,7 +24,7 @@ from ._procedure_set_limit import set_procedure_limit, ProcedureLimitParams
 
 from ._tool_create import create_tool
 from ._tool_delete import delete_tool
-from ._tool_execute import execute_tool, ToolExecuteParams, Argument, ToolExecuteResult
+from ._tool_execute import execute_tool, ToolExecuteParams, ToolExecuteResult
 from ._tool_list import list_tools
 from ._tool_read import read_tool
 from ._tool_update import update_tool
@@ -132,11 +132,14 @@ class Client:
             params=params,
         )
 
-    def read_conversation(self, *, conversation_id: str) -> Conversation:
+    def read_conversation(
+        self, *, conversation_id: str, params: ReadParams
+    ) -> Conversation:
         """Retrieves the conversation"""
         return read_conversation(
             client=self.http_client,
             conversation_id=conversation_id,
+            params=params,
         )
 
     def start_conversation(

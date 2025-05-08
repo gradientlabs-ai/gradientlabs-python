@@ -40,7 +40,7 @@ def main():
                 header_templates={"Content-Type": "application/json"},
                 body=HTTPBodyDefinition(
                     encoding=BodyEncoding.JSON.value,
-                    json_template="{\"speed\":\"${params.speed}\"}",
+                    json_template='{"speed":"${params.speed}"}',
                 ),
             ),
         )
