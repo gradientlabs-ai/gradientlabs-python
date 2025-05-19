@@ -21,12 +21,12 @@ class ReadParams:
 def read_conversation(
     *, client: HttpClient, conversation_id: str, params: ReadParams
 ) -> None:
-    body = {}
+    path = f"conversations/{conversation_id}/read"
     if params.support_platform:
-        body["support_platform"] = params.reason
+        path += "?support_platform={params.support_platform}"
 
     body = client.get(
-        path=f"conversations/{conversation_id}/read",
+        path=path,
         body={},
     )
     return Conversation.from_dict(body)
