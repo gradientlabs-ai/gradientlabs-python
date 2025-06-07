@@ -19,3 +19,6 @@ build-backend = "hatchling.build"
 
 [tool.uv.workspace]
 members = ["examples/tools"]
+
+[tool.ruff.lint]
+ignore = ["D100", "D101"]
