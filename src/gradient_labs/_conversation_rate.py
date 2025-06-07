@@ -32,10 +32,10 @@ class RatingParams:
     timestamp: Optional[datetime] = None
 
 
-# rate_conversation submits a customer (CSAT) rating for a conversation.
 def rate_conversation(
     *, client: HttpClient, conversation_id: str, params: RatingParams
 ) -> None:
+    """rate_conversation submits a customer (CSAT) rating for a conversation."""
     body = {
         "type": params.type,
         "value": params.value,

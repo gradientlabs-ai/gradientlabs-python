@@ -12,6 +12,10 @@ from ._conversation_event import add_conversation_event, EventParams
 from ._conversation_finish import finish_conversation, FinishParams
 from ._conversation_rate import rate_conversation, RatingParams
 from ._conversation_read import read_conversation, ReadParams
+from ._conversation_refresh_resources import (
+    refresh_conversation_resources,
+    RefreshResourcesParams,
+)
 from ._conversation_start import start_conversation, StartConversationParams
 
 from ._handoff_target_upsert import upsert_hand_off_target, UpsertHandOffTargetParams
@@ -137,6 +141,19 @@ class Client:
     ) -> Conversation:
         """Retrieves the conversation"""
         return read_conversation(
+            client=self.http_client,
+            conversation_id=conversation_id,
+            params=params,
+        )
+
+    def refresh_conversation_resources(
+        self,
+        *,
+        conversation_id: str,
+        params: RefreshResourcesParams,
+    ) -> None:
+        """Refresh the resources for a conversation."""
+        refresh_conversation_resources(
             client=self.http_client,
             conversation_id=conversation_id,
             params=params,
