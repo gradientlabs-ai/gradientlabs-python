@@ -29,4 +29,5 @@ def finish_conversation(
 
     _ = client.put(
         f"conversations/{conversation_id}/finish",
+        body=body,
     )

@@ -27,4 +27,5 @@ def refresh_conversation_resources(
 
     _ = client.post(
         f"conversations/{conversation_id}/refresh-resources",
+        body=body,
     )
