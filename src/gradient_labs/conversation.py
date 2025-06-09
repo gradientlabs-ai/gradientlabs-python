@@ -36,8 +36,16 @@ class AttachmentType(str, Enum):
 class ConversationEventType(str, Enum):
     """ConversationEventType describes an event that occurred within the conversation."""
 
-    # TYPING means the customer or human agent started typing.
-    TYPING: str = "typing"
+    # INTERNAL_NOTE means that an internal note has been added to the conversation.
+    INTERNAL_NOTE: str = "internal_note"
+
+    # JOIN means the customer or human agent joined the
+    # conversation.
+    JOIN: str = "join"
+
+    # LEAVE means the customer or human agent left the
+    # conversation.
+    LEAVE: str = "leave"
 
     # DELIVERED means that a message has been delivered
     # to a participant
@@ -47,13 +55,8 @@ class ConversationEventType(str, Enum):
     # by the participant it was delivered to
     MESSAGE_READ: str = "read"
 
-    # JOIN means the customer or human agent joined the
-    # conversation.
-    JOIN: str = "join"
-
-    # LEAVE means the customer or human agent left the
-    # conversation.
-    LEAVE: str = "leave"
+    # TYPING means the customer or human agent started typing.
+    TYPING: str = "typing"
 
 
 @dataclass_json

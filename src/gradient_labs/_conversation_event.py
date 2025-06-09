@@ -30,6 +30,10 @@ class EventParams:
     # IdempotencyKey optionally enables you to safely retry requests
     idempotency_key: Optional[str] = None
 
+    # Body optionally allows adding content (text) to the event. This is
+    # required for the
+    body: Optional[str] = None
+
 
 def add_conversation_event(
     *, client: HttpClient, conversation_id: str, params: EventParams
@@ -45,6 +49,8 @@ def add_conversation_event(
         body["timestamp"] = HttpClient.localize(params.timestamp)
     if params.idempotency_key is not None:
         body["idempotency_key"] = params.idempotency_key
+    if params.body is not None:
+        body["body"] = params.body
 
     _ = client.post(
         path=f"conversations/{conversation_id}/events",
