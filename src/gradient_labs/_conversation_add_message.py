@@ -1,8 +1,9 @@
 from typing import Optional, Any, List
 from datetime import datetime
 
-from dataclasses import dataclass
-from dataclasses_json import dataclass_json
+from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json, config
+from marshmallow import fields
 
 from ._http_client import HttpClient
 from .conversation import AttachmentType, ParticipantType
@@ -70,13 +71,19 @@ class Message:
     participant_type: ParticipantType
 
     # Created is the time at which the message was sent.
-    created: datetime
+    created: datetime = field(
+        metadata=config(
+            encoder=datetime.isoformat,
+            decoder=datetime.fromisoformat,
+            mm_field=fields.DateTime(format="iso"),
+        )
+    )
 
     # Metadata is arbitrary metadata attached to the message.
     metadata: Optional[Any] = None
 
     # attachments contains any files that were uploaded with this message.
-    attachments: List[Attachment] = None
+    attachments: Optional[List[Attachment]] = None
 
 
 def add_message(
@@ -86,7 +93,7 @@ def add_message(
         "id": params.id,
         "body": params.body,
         "participant_id": params.participant_id,
-        "participant_type": params.participant_type,
+        "participant_type": params.participant_type.value,
     }
     if params.created is not None:
         body["created"] = HttpClient.localize(params.created)
