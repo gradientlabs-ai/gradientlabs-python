@@ -25,8 +25,8 @@ def read_conversation(
     if params.support_platform:
         path += "?support_platform={params.support_platform}"
 
-    body = client.get(
+    rsp = client.get(
         path=path,
-        body={},
+        body=None,
     )
-    return Conversation.from_dict(body)
+    return Conversation.from_dict(rsp)
