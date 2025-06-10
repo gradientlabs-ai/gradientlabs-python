@@ -37,7 +37,7 @@ class ConversationEventType(str, Enum):
     """ConversationEventType describes an event that occurred within the conversation."""
 
     # INTERNAL_NOTE means that an internal note has been added to the conversation.
-    INTERNAL_NOTE: str = "internal_note"
+    INTERNAL_NOTE: str = "internal-note"
 
     # JOIN means the customer or human agent joined the
     # conversation.

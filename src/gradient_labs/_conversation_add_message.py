@@ -47,7 +47,7 @@ class AddMessageParams:
     metadata: Optional[Any] = None
 
     # attachments contains any files that were uploaded with this message.
-    attachments: List[Attachment] = None
+    attachments: Optional[List[Attachment]] = None
 
 
 @dataclass_json
@@ -100,7 +100,7 @@ def add_message(
     if params.metadata is not None:
         body["metadata"] = params.metadata
     if params.attachments is not None:
-        body["attachments"] = params.attachments
+        body["attachments"] = [a.to_dict() for a in params.attachments]
 
     rsp = client.post(path=f"conversations/{conversation_id}/messages", body=body)
     return Message.from_dict(rsp)
