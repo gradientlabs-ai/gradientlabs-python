@@ -40,7 +40,6 @@ class HttpClient:
 
     def _api_call(self, request_func: Callable, path: str, body: Any):
         url = f"{self.base_url}/{path}"
-        print(url, body)
         rsp = request_func(
             url,
             json=body,

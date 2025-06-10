@@ -50,7 +50,7 @@ def start_conversation(
     body = {
         "id": params.id,
         "customer_id": params.customer_id,
-        "channel": params.channel,
+        "channel": params.channel.value,
     }
     if params.metadata is not None:
         body["metadata"] = params.metadata
