@@ -1,5 +1,6 @@
 from typing import Any, Optional, List
 
+from ._article_delete import delete_article
 from ._article_topic_upsert import upsert_article_topic, ArticleTopicUpsertParams
 from ._article_upsert import upsert_article, UpsertArticleParams
 
@@ -59,6 +60,14 @@ class Client:
             timeout=timeout,
         )
         self.signing_key = signing_key
+
+    def delete_article(self, *, id: str) -> None:
+        """delete_article marks an article as deleted. Copies of the article are kept
+        in case they are needed to render citations."""
+        delete_article(
+            client=self.http_client,
+            id=id,
+        )
 
     def upsert_article_topic(self, *, params: ArticleTopicUpsertParams) -> None:
         """upsert_article_topic inserts or updates a help article topic"""
