@@ -1,6 +1,7 @@
 from typing import Any, Optional, List
 
 from ._article_delete import delete_article
+from ._article_set_status import set_article_usage_status, SetArticleUsageStatusParams
 from ._article_topic_upsert import upsert_article_topic, ArticleTopicUpsertParams
 from ._article_upsert import upsert_article, UpsertArticleParams
 
@@ -67,6 +68,17 @@ class Client:
         delete_article(
             client=self.http_client,
             id=id,
+        )
+
+    def set_article_usage_status(
+        self, *, id: str, params: SetArticleUsageStatusParams
+    ) -> None:
+        """set_article_usage_status updates an article's usage status. Use this to
+        make it (un)available for use by the AI agent."""
+        set_article_usage_status(
+            client=self.http_client,
+            id=id,
+            params=params,
         )
 
     def upsert_article_topic(self, *, params: ArticleTopicUpsertParams) -> None:

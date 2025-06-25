@@ -1,6 +1,13 @@
 from enum import Enum
 
 
+class ArticleUsageStatus(str, Enum):
+    """Usage status defines whether the AI agent can use a published article or not."""
+
+    ON: str = "on"
+    OFF: str = "off"
+
+
 class Visibility(str, Enum):
     """Visibility describes who can view the given item (e.g. help article)"""
 
