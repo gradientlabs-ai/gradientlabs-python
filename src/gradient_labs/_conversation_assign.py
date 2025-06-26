@@ -32,7 +32,7 @@ def assign_conversation(
     *, client: HttpClient, conversation_id: str, params: AssignmentParams
 ) -> None:
     """run assigns a conversation to a participant."""
-    body = {"assignee_type": params.participant_type}
+    body = {"assignee_type": params.participant_type.value}
     if params.assignee_id:
         body["assignee_id"] = params.assignee_id
     if params.timestamp:
