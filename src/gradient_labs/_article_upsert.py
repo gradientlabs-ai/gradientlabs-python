@@ -40,7 +40,7 @@ class UpsertArticleParams:
     # status describes whether this article is published or not.
     status: PublicationStatus
 
-    # created is when the topic was first created.
+    # created is when the article was first created.
     created: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
@@ -49,7 +49,7 @@ class UpsertArticleParams:
         )
     )
 
-    # last_edited is when the topic was last changed.
+    # last_edited is when the article was last changed.
     last_edited: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,

@@ -144,6 +144,12 @@ class AgentMessageEvent:
     sequence identifies which agent message this is in the current turn.
     """
 
+    intent: Optional[str] = None
+    """
+    intent is the most recent intent that was classified from the customer's
+    conversation, if any.
+    """
+
 
 @dataclass_json
 @dataclass(frozen=True)
