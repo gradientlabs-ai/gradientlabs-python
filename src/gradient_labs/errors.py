@@ -1,3 +1,5 @@
+from json import JSONDecodeError
+
 class ResponseError(Exception):
     """
     Exeception representing an unexpected HTTP response status from the API.
@@ -7,7 +9,10 @@ class ResponseError(Exception):
         super().__init__()
 
         self.status_code = response.status_code
-        self.message = response.json().get("message")
+        try:
+            self.message = response.json().get("message")
+        except JSONDecodeError:
+            self.message = response.text
 
     def __str__(self):
         return f"HTTP {self.status_code}: {self.message}"
