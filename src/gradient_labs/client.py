@@ -19,6 +19,10 @@ from ._conversation_start import start_conversation, StartConversationParams
 from ._handoff_target_upsert import upsert_hand_off_target, UpsertHandOffTargetParams
 from ._handoff_targets import list_handoff_targets, HandOffTargets
 from ._handoff_target_delete import delete_hand_off_target, DeleteHandOffTargetParams
+from ._handoff_target_set_default import (
+    set_default_hand_off_target,
+    SetDefaultHandOffTargetParams,
+)
 
 from .procedure import Procedure
 from ._procedure_read import read_procedure
@@ -224,6 +228,19 @@ class Client:
 
         Note: requires a `Management` API key."""
         upsert_hand_off_target(
+            client=self.http_client,
+            params=params,
+        )
+
+    def set_default_hand_off_target(
+        self, *, params: SetDefaultHandOffTargetParams
+    ) -> None:
+        """set_default_hand_off_target sets the default hand-off target that the AI agent will
+        use when handing off the conversation, if there is no specific target for that intent
+        or procedure. This can be set by channel.
+
+        Note: requires a `Management` API key."""
+        set_default_hand_off_target(
             client=self.http_client,
             params=params,
         )
