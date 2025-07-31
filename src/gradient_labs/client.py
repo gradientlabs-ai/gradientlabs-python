@@ -18,6 +18,7 @@ from ._conversation_start import start_conversation, StartConversationParams
 
 from ._handoff_target_upsert import upsert_hand_off_target, UpsertHandOffTargetParams
 from ._handoff_targets import list_handoff_targets, HandOffTargets
+from ._handoff_target_delete import delete_hand_off_target, DeleteHandOffTargetParams
 
 from .procedure import Procedure
 from ._procedure_read import read_procedure
@@ -223,6 +224,16 @@ class Client:
 
         Note: requires a `Management` API key."""
         upsert_hand_off_target(
+            client=self.http_client,
+            params=params,
+        )
+
+    def delete_hand_off_target(self, *, params: DeleteHandOffTargetParams) -> None:
+        """delete_hand_off_target deletes a hand-off target. This will fail if the hand off target
+        is in use - either in a procedure, or in an intent.
+
+        Note: requires a `Management` API key."""
+        delete_hand_off_target(
             client=self.http_client,
             params=params,
         )
