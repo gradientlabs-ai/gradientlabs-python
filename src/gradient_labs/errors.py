@@ -1,4 +1,5 @@
-from json import JSONDecodeError
+from requests.exceptions import JSONDecodeError
+
 
 class ResponseError(Exception):
     """
