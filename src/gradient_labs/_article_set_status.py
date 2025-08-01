@@ -1,12 +1,7 @@
-from typing import Optional, Any
-from collections import defaultdict
-from datetime import datetime
+from dataclasses import dataclass
+from dataclasses_json import dataclass_json
 
-from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json, config
-from marshmallow import fields
-
-from .article import Visibility, PublicationStatus, ArticleUsageStatus
+from .article import ArticleUsageStatus
 from ._http_client import HttpClient
 
 

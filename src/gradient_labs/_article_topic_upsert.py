@@ -7,7 +7,6 @@ from dataclasses_json import dataclass_json, config
 from marshmallow import fields
 
 from .article import Visibility, PublicationStatus
-
 from ._http_client import HttpClient
 
 
@@ -17,14 +16,8 @@ class ArticleTopicUpsertParams:
     # id is your identifier for this topic
     id: str
 
-    # parent_id is the identifier for this topic's parent topic (if any).
-    parent_id: str
-
     # name is the topic's name. This cannot be empty.
     name: str
-
-    # description is an topic's tagline. It may be empty.
-    description: str
 
     # visibility describes who can see this topic, ranging from the
     # whole world (public) through to employees only (internal).
@@ -51,6 +44,12 @@ class ArticleTopicUpsertParams:
         )
     )
 
+    # description is an topic's tagline. It may be empty.
+    description: Optional[str] = None
+
+    # parent_id is the identifier for this topic's parent topic (if any).
+    parent_id: Optional[str] = None
+
     # data optionally gives additional meta-data about the topic.
     data: Optional[dict] = field(default_factory=lambda: defaultdict(dict))
 
@@ -58,4 +57,15 @@ class ArticleTopicUpsertParams:
 def upsert_article_topic(
     *, client: HttpClient, params: ArticleTopicUpsertParams
 ) -> None:
-    _ = client.post(path="topics", body=params.to_dict())
+    body = params.to_dict()
+    if params.parent_id is None:
+        body.pop("parent_id")
+    if params.description is None:
+        body.pop("description")
+    
+    body["created"] = HttpClient.localize(params.created)
+    body["last_edited"] = HttpClient.localize(params.last_edited)
+    _ = client.post(
+        path="topics",
+        body=body,
+    )
