@@ -158,19 +158,31 @@ class ConversationHandOffEvent:
     """
     Details of the conversation the event relates to.
     """
-
-    # reason_code is the code that describes why the agent wants to hand off this
-    # conversation.
     reason_code: str
-
-    # Reason is a human-legible description of the Reason code.
+    """
+    reason_code is the code that describes why the agent wants to hand off this
+    conversation.
+    """
+    
     reason: str
+    """
+    reason is a human-legible description of the Reason code.
+    """
 
-    # Note is a human-legible summary of the conversation so far, for a smooth hand-off.
     note: Optional[str] = None
+    """
+    Note is a human-legible summary of the conversation so far, for a smooth hand-off.
+    """
 
-    # Target defines where the agent wants to hand this conversation to.
+    intent: Optional[str] = None
+    """
+    Intent is the most recent intent that was classified from the customer's conversation, if any.
+    """
+
     target: Optional[str] = None
+    """
+    Target defines where the agent wants to hand this conversation to.
+    """
 
 
 @dataclass_json
