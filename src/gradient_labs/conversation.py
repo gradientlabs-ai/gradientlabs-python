@@ -166,6 +166,9 @@ class ConversationHandOffEvent:
     # Reason is a human-legible description of the Reason code.
     reason: str
 
+    # Note is a human-legible summary of the conversation so far, for a smooth hand-off.
+    note: Optional[str] = None
+
     # Target defines where the agent wants to hand this conversation to.
     target: Optional[str] = None
 
