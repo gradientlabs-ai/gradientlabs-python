@@ -10,7 +10,7 @@ from .conversation import ParticipantType
 
 @dataclass_json
 @dataclass(frozen=True)
-class AssignmentParams:
+class ResumeParams:
     # assignee_type identifies the type of participant that this conversation is
     # being assigned to. Set this to ParticipantTypeAIAgent to assign the conversation
     # to the Gradient Labs AI agent.
@@ -28,10 +28,10 @@ class AssignmentParams:
     reason: Optional[str] = None
 
 
-def assign_conversation(
-    *, client: HttpClient, conversation_id: str, params: AssignmentParams
+def resume_conversation(
+    *, client: HttpClient, conversation_id: str, params: ResumeParams
 ) -> None:
-    """assigns a conversation to a participant."""
+    """resume_conversation re-opens a conversation that was previously finished."""
     body = {"assignee_type": params.participant_type.value}
     if params.assignee_id:
         body["assignee_id"] = params.assignee_id
@@ -39,6 +39,6 @@ def assign_conversation(
         body["timestamp"] = HttpClient.localize(params.timestamp)
 
     _ = client.put(
-        path=f"conversations/{conversation_id}/assignee",
+        path=f"conversations/{conversation_id}/resume",
         body=params.to_dict(),
     )

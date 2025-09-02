@@ -13,6 +13,7 @@ from ._conversation_cancel import cancel_conversation, CancelParams
 from ._conversation_event import add_conversation_event, EventParams
 from ._conversation_finish import finish_conversation, FinishParams
 from ._conversation_rate import rate_conversation, RatingParams
+from ._conversation_resume import resume_conversation, ResumeParams
 from ._conversation_read import read_conversation, ReadParams
 from ._conversation_start import start_conversation, StartConversationParams
 
@@ -153,6 +154,14 @@ class Client:
     def rate_conversation(self, *, conversation_id: str, params: RatingParams) -> None:
         """rate_conversation submits a customer (CSAT) rating for a conversation."""
         rate_conversation(
+            client=self.http_client,
+            conversation_id=conversation_id,
+            params=params,
+        )
+
+    def resume_conversation(self, *, conversation_id: str, params: ResumeParams) -> None:
+        """resume_conversation re-opens a conversation that was previously finished."""
+        resume_conversation(
             client=self.http_client,
             conversation_id=conversation_id,
             params=params,
