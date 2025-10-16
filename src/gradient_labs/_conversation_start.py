@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Optional, Dict, Any
 from datetime import datetime
 
 from dataclasses import dataclass
@@ -43,6 +43,10 @@ class StartConversationParams:
     # If not given, this will default to the current time.
     created: Optional[datetime] = None
 
+    # resources is an arbitrary object attached to the conversation and available to the AI agent
+	# during the conversation. You can also use resources as parameters for your tools.
+    resources: Optional[Dict[str, Any]] = None
+
 
 def start_conversation(
     *, client: HttpClient, params: StartConversationParams
@@ -56,6 +60,8 @@ def start_conversation(
         body["metadata"] = params.metadata
     if params.created is not None:
         body["created"] = HttpClient.localize(params.created)
+    if params.resources is not None:
+        body["resources"] = params.resources
 
     rsp = client.post(
         path="conversations",

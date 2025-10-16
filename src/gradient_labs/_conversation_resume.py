@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 from datetime import datetime
 
 from dataclasses import dataclass
@@ -27,6 +27,10 @@ class ResumeParams:
     # reason optionally allows you to describe why this assignment is happening.
     reason: Optional[str] = None
 
+    # resources is an arbitrary object attached to the conversation and available to the AI agent
+	# during the conversation. You can also use resources as parameters for your tools.
+    resources: Optional[Dict[str, Any]] = None
+
 
 def resume_conversation(
     *, client: HttpClient, conversation_id: str, params: ResumeParams
@@ -37,6 +41,8 @@ def resume_conversation(
         body["assignee_id"] = params.assignee_id
     if params.timestamp:
         body["timestamp"] = HttpClient.localize(params.timestamp)
+    if params.resources is not None:
+        body["resources"] = params.resources
 
     _ = client.put(
         path=f"conversations/{conversation_id}/resume",
