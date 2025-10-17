@@ -85,6 +85,11 @@ class Message:
     # attachments contains any files that were uploaded with this message.
     attachments: Optional[List[Attachment]] = None
 
+    # conversation_token is the raw sensitive token that can be optionally provided in every message.
+    # The latest token of the conversation will be echoed back in future Webhooks, under the header `X-GradientLabs-Token`,
+    # as well as in HTTP Tools using templates. 
+    conversation_token: Optional[str] = None
+
 
 def add_message(
     *, client: HttpClient, conversation_id: str, params: AddMessageParams
@@ -101,6 +106,8 @@ def add_message(
         body["metadata"] = params.metadata
     if params.attachments is not None:
         body["attachments"] = [a.to_dict() for a in params.attachments]
+    if params.conversation_token is not None:
+        body["conversation_token"] = params.conversation_token
 
     rsp = client.post(path=f"conversations/{conversation_id}/messages", body=body)
     return Message.from_dict(rsp)
