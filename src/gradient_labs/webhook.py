@@ -28,6 +28,9 @@ class Webhook:
     SCHEME = "v1"
     LEEWAY = timedelta(minutes=5)
 
+    SIGNATURE_HEADER_NAME = "X-GradientLabs-Signature"
+    TOKEN_HEADER_NAME = "X-GradientLabs-Token"
+
     @classmethod
     def parse_event(
         cls,

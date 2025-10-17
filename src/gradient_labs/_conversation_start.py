@@ -47,6 +47,10 @@ class StartConversationParams:
 	# during the conversation. You can also use resources as parameters for your tools.
     resources: Optional[Dict[str, Any]] = None
 
+    # conversation_token is the raw sensitive token that can be optionally provided when starting a conversation.
+    # The latest token of the conversation will be echoed back in future Webhooks, under the header `X-GradientLabs-Token`.
+    conversation_token: Optional[str] = None
+
 
 def start_conversation(
     *, client: HttpClient, params: StartConversationParams
@@ -62,6 +66,8 @@ def start_conversation(
         body["created"] = HttpClient.localize(params.created)
     if params.resources is not None:
         body["resources"] = params.resources
+    if params.conversation_token is not None:
+        body["conversation_token"] = params.conversation_token
 
     rsp = client.post(
         path="conversations",
