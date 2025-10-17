@@ -48,7 +48,8 @@ class StartConversationParams:
     resources: Optional[Dict[str, Any]] = None
 
     # conversation_token is the raw sensitive token that can be optionally provided when starting a conversation.
-    # The latest token of the conversation will be echoed back in future Webhooks, under the header `X-GradientLabs-Token`.
+    # The latest token of the conversation will be echoed back in future Webhooks, under the header `X-GradientLabs-Token`,
+    # as well as in HTTP Tools using templates. 
     conversation_token: Optional[str] = None
 
 
