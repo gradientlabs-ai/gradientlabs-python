@@ -69,7 +69,7 @@ class Conversation:
     id: str
     customer_id: str
     channel: ConversationChannel
-    metadata: dict
+    
     status: str
     created: datetime = field(
         metadata=config(
@@ -85,6 +85,8 @@ class Conversation:
             mm_field=fields.DateTime(format="iso"),
         )
     )
+
+    metadata: Optional[Dict] = None
 
 
 @dataclass_json
