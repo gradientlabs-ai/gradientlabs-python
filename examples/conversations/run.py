@@ -23,7 +23,7 @@ client = Client(
 conv = client.start_conversation(
     conversation_id=str(uuid.uuid4()),
     customer_id="snake",
-    channel=ConversationChannel.WEB,
+    channel=ConversationChannel.LIVE_CHAT,
 )
 
 logging.info(f"✅ Conversation started: {conv.id}")

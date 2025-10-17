@@ -22,7 +22,7 @@ class ConversationChannel(str, Enum):
     in touch with customer support."""
 
     EMAIL: str = "email"
-    WEB: str = "web"
+    LIVE_CHAT: str = "web"
 
 
 class AttachmentType(str, Enum):
