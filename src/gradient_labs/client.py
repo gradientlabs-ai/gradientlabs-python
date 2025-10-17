@@ -168,7 +168,7 @@ class Client:
         )
 
     def read_conversation(
-        self, *, conversation_id: str, params: ReadParams
+        self, *, conversation_id: str, params: Optional[ReadParams] = None
     ) -> Conversation:
         """Retrieves the conversation"""
         return read_conversation(
