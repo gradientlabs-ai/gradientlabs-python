@@ -15,8 +15,21 @@ class Attachment:
     # type of file that was uploaded.
     type: AttachmentType
 
-    # file_name is the name of the file that was uploaded.
+    # file_name is the name of the file that was uploaded, or an
+    # adequate placeholder for that name, which can be shown to reviewers.
     file_name: str
+
+    # url is the publicly accessible URL where the attachment can be downloaded
+	# from. This should be a fully qualified URL. If not given, the AI agent will
+	# only know that an attachment exists, but will be unable to process it.
+    url: Optional[str] = ""
+
+    # description is an optional description of the attachment. This is only intended
+	# to be used if you cannot give us access to the raw attachment, but can
+	# run your own LLM completions on the attachment and send us a description instead.
+	#
+	# Chat to us first before using it!
+    description: Optional[str] = ""
 
 
 @dataclass_json
