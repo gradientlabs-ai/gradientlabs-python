@@ -13,7 +13,6 @@ from ._http_client import HttpClient
 @dataclass_json
 @dataclass(frozen=True)
 class UpsertArticleParams:
-
     # id is your identifier of choice for this article.
     id: str
 
@@ -75,7 +74,7 @@ def upsert_article(*, client: HttpClient, params: UpsertArticleParams) -> None:
         body.pop("author_id")
     if params.body is None:
         body.pop("body")
-    
+
     body["created"] = HttpClient.localize(params.created)
     body["last_edited"] = HttpClient.localize(params.last_edited)
     _ = client.post(

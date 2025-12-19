@@ -28,7 +28,7 @@ class ResumeParams:
     reason: Optional[str] = None
 
     # resources is an arbitrary object attached to the conversation and available to the AI agent
-	# during the conversation. You can also use resources as parameters for your tools.
+    # during the conversation. You can also use resources as parameters for your tools.
     resources: Optional[Dict[str, Any]] = None
 
 

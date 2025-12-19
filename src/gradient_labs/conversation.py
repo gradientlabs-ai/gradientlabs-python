@@ -69,7 +69,7 @@ class Conversation:
     id: str
     customer_id: str
     channel: ConversationChannel
-    
+
     status: str
     created: datetime = field(
         metadata=config(
@@ -165,7 +165,7 @@ class ConversationHandOffEvent:
     reason_code is the code that describes why the agent wants to hand off this
     conversation.
     """
-    
+
     reason: str
     """
     reason is a human-legible description of the Reason code.
