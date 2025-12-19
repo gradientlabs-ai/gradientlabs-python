@@ -44,12 +44,12 @@ class StartConversationParams:
     created: Optional[datetime] = None
 
     # resources is an arbitrary object attached to the conversation and available to the AI agent
-	# during the conversation. You can also use resources as parameters for your tools.
+    # during the conversation. You can also use resources as parameters for your tools.
     resources: Optional[Dict[str, Any]] = None
 
     # conversation_token is the raw sensitive token that can be optionally provided when starting a conversation.
     # The latest token of the conversation will be echoed back in future Webhooks, under the header `X-GradientLabs-Token`,
-    # as well as in HTTP Tools using templates. 
+    # as well as in HTTP Tools using templates.
     conversation_token: Optional[str] = None
 
 

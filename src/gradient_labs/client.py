@@ -159,7 +159,9 @@ class Client:
             params=params,
         )
 
-    def resume_conversation(self, *, conversation_id: str, params: ResumeParams) -> None:
+    def resume_conversation(
+        self, *, conversation_id: str, params: ResumeParams
+    ) -> None:
         """resume_conversation re-opens a conversation that was previously finished."""
         resume_conversation(
             client=self.http_client,

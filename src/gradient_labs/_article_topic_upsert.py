@@ -62,7 +62,7 @@ def upsert_article_topic(
         body.pop("parent_id")
     if params.description is None:
         body.pop("description")
-    
+
     body["created"] = HttpClient.localize(params.created)
     body["last_edited"] = HttpClient.localize(params.last_edited)
     _ = client.post(
