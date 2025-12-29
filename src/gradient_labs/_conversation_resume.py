@@ -36,7 +36,7 @@ def resume_conversation(
     *, client: HttpClient, conversation_id: str, params: ResumeParams
 ) -> None:
     """resume_conversation re-opens a conversation that was previously finished."""
-    body = {"assignee_type": params.participant_type.value}
+    body = {"assignee_type": params.assignee_type.value}
     if params.assignee_id:
         body["assignee_id"] = params.assignee_id
     if params.timestamp:
@@ -46,5 +46,5 @@ def resume_conversation(
 
     _ = client.put(
         path=f"conversations/{conversation_id}/resume",
-        body=params.to_dict(),
+        body=body,
     )
