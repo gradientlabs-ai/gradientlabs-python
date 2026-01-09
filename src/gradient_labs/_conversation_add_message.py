@@ -24,6 +24,13 @@ class Attachment:
     # only know that an attachment exists, but will be unable to process it.
     url: Optional[str] = ""
 
+    # summary is an optional short summary of the attachment.  This is only intended
+    # to be used if you cannot give us access to the raw attachment, but can
+    # run your own LLM completions on the attachment and send us a description instead.
+    #
+    # If a summary or description is provided, then there must be no URL.
+    summary: Optional[str] = ""
+
     # description is an optional description of the attachment. This is only intended
     # to be used if you cannot give us access to the raw attachment, but can
     # run your own LLM completions on the attachment and send us a description instead.
