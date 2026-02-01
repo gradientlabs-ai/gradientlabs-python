@@ -63,9 +63,6 @@ class AddMessageParams:
     # created is the time at which the message was sent.
     created: Optional[datetime] = None
 
-    # metadata is arbitrary metadata that will be attached to the message.
-    metadata: Optional[Any] = None
-
     # attachments contains any files that were uploaded with this message.
     attachments: Optional[List[Attachment]] = None
 
@@ -104,9 +101,6 @@ class Message:
         )
     )
 
-    # Metadata is arbitrary metadata attached to the message.
-    metadata: Optional[Any] = None
-
     # attachments contains any files that were uploaded with this message.
     attachments: Optional[List[Attachment]] = None
 
@@ -122,8 +116,6 @@ def add_message(
     }
     if params.created is not None:
         body["created"] = HttpClient.localize(params.created)
-    if params.metadata is not None:
-        body["metadata"] = params.metadata
     if params.attachments is not None:
         body["attachments"] = [a.to_dict() for a in params.attachments]
     if params.conversation_token is not None:
