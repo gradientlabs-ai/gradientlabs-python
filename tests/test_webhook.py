@@ -1,4 +1,4 @@
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta
 import pytest
 from gradient_labs import *
 
@@ -52,10 +52,7 @@ class TestParseEvent:
           "data": {
             "conversation": {
               "id": "conversation-1234",
-              "customer_id": "user-1234",
-              "metadata": {
-                "chat_entrypoint": "home-page"
-              }
+              "customer_id": "user-1234"
             },
             "body": "Sure, I can help you set up your toaster oven!",
             "total": 1,
@@ -83,9 +80,6 @@ class TestParseEvent:
                 conversation=WebhookConversation(
                     conversation_id="conversation-1234",
                     customer_id="user-1234",
-                    metadata={
-                        "chat_entrypoint": "home-page",
-                    },
                 ),
                 body="Sure, I can help you set up your toaster oven!",
                 total=1,
@@ -103,10 +97,7 @@ class TestParseEvent:
           "data": {
             "conversation": {
               "id": "conversation-1234",
-              "customer_id": "user-1234",
-              "metadata": {
-                "chat_entrypoint": "home-page"
-              }
+              "customer_id": "user-1234"
             },
             "body": "Sure, I can help you set up your toaster oven!"
           }
@@ -130,10 +121,7 @@ class TestParseEvent:
           "data": {
             "conversation": {
               "id": "conversation-1234",
-              "customer_id": "user-1234",
-              "metadata": {
-                "chat_entrypoint": "home-page"
-              }
+              "customer_id": "user-1234"
             },
             "body": "Sure, I can help you set up your toaster oven!"
           }
@@ -163,10 +151,7 @@ class TestParseEvent:
           "data": {
             "conversation": {
               "id": "conversation-1234",
-              "customer_id": "user-1234",
-              "metadata": {
-                "chat_entrypoint": "home-page"
-              }
+              "customer_id": "user-1234"
             },
             "reason": "The customer asked for this.",
             "reason_code": "customer-request"
@@ -193,9 +178,6 @@ class TestParseEvent:
                 conversation=WebhookConversation(
                     conversation_id="conversation-1234",
                     customer_id="user-1234",
-                    metadata={
-                        "chat_entrypoint": "home-page",
-                    },
                 ),
                 reason="The customer asked for this.",
                 reason_code="customer-request",
@@ -212,10 +194,7 @@ class TestParseEvent:
           "data": {
             "conversation": {
               "id": "conversation-1234",
-              "customer_id": "user-1234",
-              "metadata": {
-                "chat_entrypoint": "home-page"
-              }
+              "customer_id": "user-1234"
             }
           }
         }
@@ -240,9 +219,6 @@ class TestParseEvent:
                 conversation=WebhookConversation(
                     conversation_id="conversation-1234",
                     customer_id="user-1234",
-                    metadata={
-                        "chat_entrypoint": "home-page",
-                    },
                 ),
             ),
         )
@@ -257,10 +233,7 @@ class TestParseEvent:
           "data": {
             "conversation": {
               "id": "conversation-1234",
-              "customer_id": "user-1234",
-              "metadata": {
-                "chat_entrypoint": "home-page"
-              }
+              "customer_id": "user-1234"
             },
             "action": "random-dog-fact",
             "params": {
@@ -289,9 +262,6 @@ class TestParseEvent:
                 conversation=WebhookConversation(
                     conversation_id="conversation-1234",
                     customer_id="user-1234",
-                    metadata={
-                        "chat_entrypoint": "home-page",
-                    },
                 ),
                 action="random-dog-fact",
                 params={
