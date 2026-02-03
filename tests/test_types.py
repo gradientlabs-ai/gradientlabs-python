@@ -16,9 +16,6 @@ def test_conversation(now):
         "channel": "email",
         "created": now.isoformat(),
         "updated": now.isoformat(),
-        "metadata": {
-            "user_type": "premium",
-        },
         "status": "open",
     }
     got = Conversation.from_dict(body)
@@ -28,9 +25,6 @@ def test_conversation(now):
         channel="email",
         created=now,
         updated=now,
-        metadata={
-            "user_type": "premium",
-        },
         status="open",
     )
     assert want == got

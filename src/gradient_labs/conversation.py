@@ -86,7 +86,6 @@ class Conversation:
         )
     )
 
-    metadata: Optional[Dict] = None
 
 
 @dataclass_json
@@ -110,11 +109,6 @@ class WebhookConversation:
     customer_id: str
     """
     The customer's assigned identifier.
-    """
-
-    metadata: Any
-    """
-    Arbitrary metadata attached to the conversation.
     """
 
 
