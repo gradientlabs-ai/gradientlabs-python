@@ -35,10 +35,6 @@ class StartConversationParams:
     # to the Gradient Labs AI when starting it.
     assignee_type: Optional[ParticipantType] = None
 
-    # metadata is arbitrary metadata that will be attached to the conversation.
-    # It will be passed along with webhooks so can be used as action parameters.
-    metadata: Optional[Any] = None
-
     # created optionally defines the time when the conversation started.
     # If not given, this will default to the current time.
     created: Optional[datetime] = None
@@ -61,8 +57,6 @@ def start_conversation(
         "customer_id": params.customer_id,
         "channel": params.channel.value,
     }
-    if params.metadata is not None:
-        body["metadata"] = params.metadata
     if params.created is not None:
         body["created"] = HttpClient.localize(params.created)
     if params.resources is not None:
