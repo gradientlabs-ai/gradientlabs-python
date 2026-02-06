@@ -34,8 +34,13 @@ class ToolExecuteResult:
     # id identifies the tool.
     id: str
 
-    # result is the JSON-encoded result of the tool execution.
-    result: Any
+    # result is the JSON-encoded result of the tool execution,
+    # if it succeeded.
+    result: Optional[Any] = None
+
+    # error is the error that occurred during the tool execution,
+    # if it failed.
+    error: Optional[str] = None
 
 
 def execute_tool(*, client: HttpClient, params: ToolExecuteParams) -> ToolExecuteResult:
