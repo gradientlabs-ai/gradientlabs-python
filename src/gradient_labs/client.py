@@ -37,8 +37,14 @@ from ._tool_list import list_tools
 from ._tool_read import read_tool
 from ._tool_update import update_tool
 
+from ._note_create import create_note, CreateNoteParams
+from ._note_delete import delete_note
+from ._note_update import update_note, UpdateNoteParams
+from ._note_set_status import set_note_status, SetNoteStatusParams
+
 from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
+from .note import Note
 from .webhook import Webhook, WebhookEvent
 
 
@@ -362,4 +368,34 @@ class Client:
             payload=payload,
             signature_header=signature_header,
             signing_key=self.signing_key,
+        )
+
+    def create_note(self, *, params: CreateNoteParams) -> Note:
+        """create_note creates a new note."""
+        return create_note(
+            client=self.http_client,
+            params=params,
+        )
+
+    def update_note(self, *, note_id: str, params: UpdateNoteParams) -> Note:
+        """update_note updates an existing note's contents."""
+        return update_note(
+            client=self.http_client,
+            note_id=note_id,
+            params=params,
+        )
+
+    def delete_note(self, *, note_id: str) -> None:
+        """delete_note marks a note as deleted."""
+        delete_note(
+            client=self.http_client,
+            note_id=note_id,
+        )
+
+    def set_note_status(self, *, note_id: str, params: SetNoteStatusParams) -> None:
+        """set_note_status updates a note's status."""
+        set_note_status(
+            client=self.http_client,
+            note_id=note_id,
+            params=params,
         )

@@ -87,7 +87,6 @@ class Conversation:
     )
 
 
-
 @dataclass_json
 @dataclass(frozen=True)
 class Attachment:
