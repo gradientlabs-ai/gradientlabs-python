@@ -83,11 +83,29 @@ from ._resource_type_read import read_resource_type
 from ._resource_type_update import update_resource_type, UpdateResourceTypeParams
 from ._resource_type_delete import delete_resource_type
 
+from ._resource_source_create import create_resource_source, CreateResourceSourceParams
+from ._resource_source_list import list_resource_sources, ResourceSourcesList
+from ._resource_source_read import read_resource_source
+from ._resource_source_update import update_resource_source, UpdateResourceSourceParams
+from ._resource_source_update_schema_by_examples import (
+    update_resource_source_schema_by_examples,
+    UpdateResourceSourceSchemaByExamplesParams,
+)
+from ._resource_source_delete import delete_resource_source
+
 from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
 from .note import Note
 from .secret import Secret
 from .resource_type import ResourceType, Scope, RefreshStrategy, SourceConfig
+from .resource_source import (
+    ResourceSource,
+    SourceType,
+    SchemaUpdateStrategy,
+    ResourceHTTPDefinition,
+    ResourceHTTPBodyDefinition,
+    ResourceWebhookDefinition,
+)
 from .webhook import Webhook, WebhookEvent
 
 
@@ -634,6 +652,70 @@ class Client:
 
         Note: requires a `Management` API key."""
         delete_resource_type(
+            client=self.http_client,
+            id=id,
+        )
+
+    # ==================== Resource Source Operations ====================
+
+    def create_resource_source(
+        self, *, params: CreateResourceSourceParams
+    ) -> ResourceSource:
+        """create_resource_source creates a new resource source.
+
+        Note: requires a `Management` API key."""
+        return create_resource_source(
+            client=self.http_client,
+            params=params,
+        )
+
+    def list_resource_sources(self) -> ResourceSourcesList:
+        """list_resource_sources returns all of your resource sources.
+
+        Note: requires a `Management` API key."""
+        return list_resource_sources(client=self.http_client)
+
+    def read_resource_source(self, *, id: str) -> ResourceSource:
+        """read_resource_source retrieves a specific resource source by ID.
+
+        Note: requires a `Management` API key."""
+        return read_resource_source(
+            client=self.http_client,
+            id=id,
+        )
+
+    def update_resource_source(
+        self, *, id: str, params: UpdateResourceSourceParams
+    ) -> ResourceSource:
+        """update_resource_source updates an existing resource source.
+
+        Note: requires a `Management` API key."""
+        return update_resource_source(
+            client=self.http_client,
+            id=id,
+            params=params,
+        )
+
+    def update_resource_source_schema_by_examples(
+        self, *, id: str, params: UpdateResourceSourceSchemaByExamplesParams
+    ) -> ResourceSource:
+        """update_resource_source_schema_by_examples updates a resource source schema by providing example data payloads.
+
+        Instead of manually defining the JSON schema structure, you send representative examples of the data
+        your resource source returns, and the system automatically infers the schema from these examples.
+
+        Note: requires a `Management` API key."""
+        return update_resource_source_schema_by_examples(
+            client=self.http_client,
+            id=id,
+            params=params,
+        )
+
+    def delete_resource_source(self, *, id: str) -> None:
+        """delete_resource_source permanently deletes a resource source. This action cannot be undone.
+
+        Note: requires a `Management` API key."""
+        delete_resource_source(
             client=self.http_client,
             id=id,
         )
