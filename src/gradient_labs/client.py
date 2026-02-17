@@ -3,7 +3,11 @@ from typing import Any, Optional, List
 from ._article_delete import delete_article
 from ._article_set_status import set_article_usage_status, SetArticleUsageStatusParams
 from ._article_topic_upsert import upsert_article_topic, ArticleTopicUpsertParams
+from ._article_topic_read import read_topic, ReadTopicParams
+from ._article_topics_list import list_topics, ListTopicsParams, ListTopicsResponse
 from ._article_upsert import upsert_article, UpsertArticleParams
+
+from .topic import Topic
 
 from .conversation import Conversation
 from ._conversation_add_message import add_message, AddMessageParams, Message
@@ -122,6 +126,29 @@ class Client:
         """upsert_article inserts or updates a help article"""
         upsert_article(
             client=self.http_client,
+            params=params,
+        )
+
+    def list_topics(
+        self, *, params: Optional[ListTopicsParams] = None
+    ) -> ListTopicsResponse:
+        """list_topics lists a company's topics, optionally filtered by support platform.
+
+        Note: requires a `Management` API key."""
+        return list_topics(
+            client=self.http_client,
+            params=params,
+        )
+
+    def read_topic(
+        self, *, topic_id: str, params: Optional[ReadTopicParams] = None
+    ) -> Topic:
+        """read_topic reads an article topic by ID.
+
+        Note: requires a `Management` API key."""
+        return read_topic(
+            client=self.http_client,
+            topic_id=topic_id,
             params=params,
         )
 
