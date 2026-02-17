@@ -7,7 +7,6 @@ from ._article_upsert import upsert_article, UpsertArticleParams
 
 from .conversation import Conversation
 from ._conversation_add_message import add_message, AddMessageParams, Message
-from ._conversation_add_resource import add_resource
 from ._conversation_assign import assign_conversation, AssignmentParams
 from ._conversation_cancel import cancel_conversation, CancelParams
 from ._conversation_event import add_conversation_event, EventParams
@@ -207,37 +206,6 @@ class Client:
             client=self.http_client,
             conversation_id=conversation_id,
             params=params,
-        )
-
-    def add_resource(
-        self,
-        *,
-        conversation_id: str,
-        name: str,
-        data: Any,
-    ) -> None:
-        """add_resource adds (or updates) a resource to the conversation (e.g. the
-        customer's order details) so the AI agent can handle customer-specific queries.
-
-        A resource can be any JSON document, as long it is smaller than 1MB. There
-        are no strict requirements on the format/structure of the document, but we
-        recommend making attribute names as descriptive as possible.
-
-        Over time, the AI agent will learn the structure of your resources - so while
-        it's fine to add new attributes, you may want to consider using new resource
-        names when removing attributes or changing the structure of your resources
-        significantly.
-
-        Resource names are case-insensitive and can be anything consisting of letters,
-        numbers, or any of the following characters: _ - + =.
-
-        Names should be descriptive handles that are the same for all conversations
-        (e.g. "order-details" and "user-profile") not unique identifiers."""
-        add_resource(
-            client=self.http_client,
-            conversation_id=conversation_id,
-            name=name,
-            resource=data,
         )
 
     def upsert_hand_off_target(self, *, params: UpsertHandOffTargetParams) -> None:
