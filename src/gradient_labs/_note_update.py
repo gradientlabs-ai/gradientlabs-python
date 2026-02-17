@@ -15,9 +15,6 @@ class UpdateNoteParams:
     # Title is the note's title.
     title: str
 
-    # AuthorID optionally identifies the (current) author of the note.
-    author_id: Optional[str] = None
-
     # Body is the main contents of a note. This is mutually exclusive with webpage_url.
     body: Optional[str] = None
 
@@ -37,8 +34,6 @@ def update_note(*, client: HttpClient, note_id: str, params: UpdateNoteParams) -
     body = {
         "title": params.title,
     }
-    if params.author_id is not None:
-        body["author_id"] = params.author_id
     if params.body is not None:
         body["body"] = params.body
     if params.webpage_url is not None:
