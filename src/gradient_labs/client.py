@@ -77,10 +77,17 @@ from ._secret_write import write_secret, WriteSecretParams
 from ._secrets_list import list_secrets, SecretsList
 from ._secret_revoke import revoke_secret
 
+from ._resource_type_create import create_resource_type, CreateResourceTypeParams
+from ._resource_type_list import list_resource_types, ResourceTypesList
+from ._resource_type_read import read_resource_type
+from ._resource_type_update import update_resource_type, UpdateResourceTypeParams
+from ._resource_type_delete import delete_resource_type
+
 from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
 from .note import Note
 from .secret import Secret
+from .resource_type import ResourceType, Scope, RefreshStrategy, SourceConfig
 from .webhook import Webhook, WebhookEvent
 
 
@@ -582,4 +589,51 @@ class Client:
         revoke_secret(
             client=self.http_client,
             name=name,
+        )
+
+    # Resource Type Operations
+
+    def create_resource_type(self, *, params: CreateResourceTypeParams) -> ResourceType:
+        """create_resource_type creates a new resource type.
+
+        Note: requires a `Management` API key."""
+        return create_resource_type(
+            client=self.http_client,
+            params=params,
+        )
+
+    def list_resource_types(self) -> ResourceTypesList:
+        """list_resource_types returns all of your resource types.
+
+        Note: requires a `Management` API key."""
+        return list_resource_types(client=self.http_client)
+
+    def read_resource_type(self, *, id: str) -> ResourceType:
+        """read_resource_type retrieves a specific resource type by ID.
+
+        Note: requires a `Management` API key."""
+        return read_resource_type(
+            client=self.http_client,
+            id=id,
+        )
+
+    def update_resource_type(
+        self, *, id: str, params: UpdateResourceTypeParams
+    ) -> ResourceType:
+        """update_resource_type updates an existing resource type.
+
+        Note: requires a `Management` API key."""
+        return update_resource_type(
+            client=self.http_client,
+            id=id,
+            params=params,
+        )
+
+    def delete_resource_type(self, *, id: str) -> None:
+        """delete_resource_type permanently deletes a resource type. This action cannot be undone.
+
+        Note: requires a `Management` API key."""
+        delete_resource_type(
+            client=self.http_client,
+            id=id,
         )
