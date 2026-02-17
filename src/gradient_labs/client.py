@@ -20,6 +20,14 @@ from ._conversation_return_async_tool_result import (
     ReturnAsyncToolResultParams,
 )
 
+from ._outbound_conversation_start import (
+    start_outbound_conversation,
+    StartOutboundConversationParams,
+    StartOutboundConversationResponse,
+    CustomerSource,
+    SupportPlatform,
+)
+
 from ._handoff_target_upsert import upsert_hand_off_target, UpsertHandOffTargetParams
 from ._handoff_targets import list_handoff_targets, HandOffTargets
 from ._handoff_target_delete import delete_hand_off_target, DeleteHandOffTargetParams
@@ -195,6 +203,27 @@ class Client:
     ) -> Conversation:
         """Starts a conversation."""
         return start_conversation(
+            client=self.http_client,
+            params=params,
+        )
+
+    def start_outbound_conversation(
+        self,
+        *,
+        params: StartOutboundConversationParams,
+    ) -> StartOutboundConversationResponse:
+        """Starts an outbound conversation.
+
+        Creates and starts a new outbound conversation where the AI agent proactively
+        initiates contact with a customer. The conversation follows the instructions
+        defined in the specified outbound procedure.
+
+        If support_platform is not provided, the system will automatically select the
+        highest priority platform that has integration settings configured for your company.
+
+        If body and subject are provided, that message will be sent as the initial message.
+        Otherwise, the AI agent will generate an appropriate initial message based on the procedure."""
+        return start_outbound_conversation(
             client=self.http_client,
             params=params,
         )
