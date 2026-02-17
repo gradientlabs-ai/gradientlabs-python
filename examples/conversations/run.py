@@ -79,15 +79,8 @@ client.add_message(
 )
 logging.info("✅ Human agent message added")
 
-client.add_resource(
-    conversation_id=conv.id,
-    name="account-details",
-    data={
-        "sort_code": "123456",
-        "account_type": "personal",
-    },
-)
-logging.info("✅ Resource added")
+# Note: Resources should be passed during start_conversation or resume_conversation
+# via the resources parameter, not added separately afterwards.
 
 client.end_conversation(conversation_id=conv.id)
 logging.info(f"✅ Conversation closed: {conv.id}")
