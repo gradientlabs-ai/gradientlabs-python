@@ -73,9 +73,14 @@ from ._note_delete import delete_note
 from ._note_update import update_note, UpdateNoteParams
 from ._note_set_status import set_note_status, SetNoteStatusParams
 
+from ._secret_write import write_secret, WriteSecretParams
+from ._secrets_list import list_secrets, SecretsList
+from ._secret_revoke import revoke_secret
+
 from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
 from .note import Note
+from .secret import Secret
 from .webhook import Webhook, WebhookEvent
 
 
@@ -550,4 +555,31 @@ class Client:
             client=self.http_client,
             note_id=note_id,
             params=params,
+        )
+
+    # Secret Operations
+
+    def write_secret(self, *, params: WriteSecretParams) -> Secret:
+        """write_secret creates or updates a secret. If a secret with the given name already exists,
+        it will be updated with the new value and configuration.
+
+        Note: requires a `Management` API key."""
+        return write_secret(
+            client=self.http_client,
+            params=params,
+        )
+
+    def list_secrets(self) -> SecretsList:
+        """list_secrets returns all of your secrets.
+
+        Note: requires a `Management` API key."""
+        return list_secrets(client=self.http_client)
+
+    def revoke_secret(self, *, name: str) -> None:
+        """revoke_secret permanently deletes a secret. This action cannot be undone.
+
+        Note: requires a `Management` API key."""
+        revoke_secret(
+            client=self.http_client,
+            name=name,
         )
