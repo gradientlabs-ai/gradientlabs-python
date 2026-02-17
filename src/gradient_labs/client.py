@@ -39,6 +39,11 @@ from ._handoff_target_set_default import (
     set_default_hand_off_target,
     SetDefaultHandOffTargetParams,
 )
+from ._handoff_target_get_default import (
+    get_default_hand_off_target,
+    GetDefaultHandOffTargetParams,
+    GetDefaultHandOffTargetResponse,
+)
 
 from .procedure import Procedure
 from ._procedure_read import read_procedure
@@ -317,6 +322,18 @@ class Client:
 
         Note: requires a `Management` API key."""
         set_default_hand_off_target(
+            client=self.http_client,
+            params=params,
+        )
+
+    def get_default_hand_off_target(
+        self, *, params: GetDefaultHandOffTargetParams
+    ) -> GetDefaultHandOffTargetResponse:
+        """get_default_hand_off_target gets the current default hand-off target for the company.
+        This can be retrieved by channel.
+
+        Note: requires a `Management` API key."""
+        return get_default_hand_off_target(
             client=self.http_client,
             params=params,
         )
