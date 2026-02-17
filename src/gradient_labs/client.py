@@ -15,6 +15,10 @@ from ._conversation_rate import rate_conversation, RatingParams
 from ._conversation_resume import resume_conversation, ResumeParams
 from ._conversation_read import read_conversation, ReadParams
 from ._conversation_start import start_conversation, StartConversationParams
+from ._conversation_return_async_tool_result import (
+    return_async_tool_result,
+    ReturnAsyncToolResultParams,
+)
 
 from ._handoff_target_upsert import upsert_hand_off_target, UpsertHandOffTargetParams
 from ._handoff_targets import list_handoff_targets, HandOffTargets
@@ -203,6 +207,26 @@ class Client:
     ) -> Message:
         """Adds a message to a conversation."""
         return add_message(
+            client=self.http_client,
+            conversation_id=conversation_id,
+            params=params,
+        )
+
+    def return_async_tool_result(
+        self,
+        *,
+        conversation_id: str,
+        params: ReturnAsyncToolResultParams,
+    ) -> None:
+        """Returns the result of an async tool execution.
+
+        When a tool is configured for asynchronous execution, the agent will request
+        the tool execution via an action.execute webhook event, and your system should
+        return the result by calling this method.
+
+        This allows your system to perform long-running operations without blocking the
+        conversation, and return results when they're ready."""
+        return_async_tool_result(
             client=self.http_client,
             conversation_id=conversation_id,
             params=params,
