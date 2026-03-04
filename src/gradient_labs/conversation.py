@@ -145,6 +145,13 @@ class AgentMessageEvent:
     conversation, if any.
     """
 
+    is_holding: Optional[bool] = False
+    """
+    is_holding identifies whether the agent message is a holding-response or not.
+    Holding-responses are sent to let the customer know that the agent is working on a full response.
+    For example: "I'm sorry to hear you want to close your account. Let me take a look at the next steps for you..."
+    """
+
 
 @dataclass_json
 @dataclass(frozen=True)
