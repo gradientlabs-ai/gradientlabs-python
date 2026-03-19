@@ -48,6 +48,10 @@ class StartConversationParams:
     # as well as in HTTP Tools using templates.
     conversation_token: Optional[str] = None
 
+    # traffic_group_id optionally restricts the conversation to only access procedures
+    # assigned to the specified traffic group, plus any procedures not assigned to any group.
+    traffic_group_id: Optional[str] = None
+
 
 def start_conversation(
     *, client: HttpClient, params: StartConversationParams
@@ -63,6 +67,8 @@ def start_conversation(
         body["resources"] = params.resources
     if params.conversation_token is not None:
         body["conversation_token"] = params.conversation_token
+    if params.traffic_group_id is not None:
+        body["traffic_group_id"] = params.traffic_group_id
 
     rsp = client.post(
         path="conversations",
