@@ -93,6 +93,17 @@ from ._resource_source_update_schema_by_examples import (
 )
 from ._resource_source_delete import delete_resource_source
 
+from .traffic_group import TrafficGroup, TrafficGroupTarget
+from ._traffic_group_create import create_traffic_group, CreateTrafficGroupParams
+from ._traffic_group_list import list_traffic_groups, TrafficGroupsList
+from ._traffic_group_update import update_traffic_group, UpdateTrafficGroupParams
+from ._traffic_group_delete import delete_traffic_group
+from ._traffic_group_target_create import (
+    create_traffic_group_target,
+    CreateTrafficGroupTargetParams,
+)
+from ._traffic_group_target_delete import delete_traffic_group_target
+
 from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
 from .note import Note
@@ -718,4 +729,71 @@ class Client:
         delete_resource_source(
             client=self.http_client,
             id=id,
+        )
+
+    # ==================== Traffic Group Operations ====================
+
+    def create_traffic_group(
+        self, *, params: CreateTrafficGroupParams
+    ) -> TrafficGroup:
+        """create_traffic_group creates a new traffic group.
+
+        Note: requires a `Management` API key."""
+        return create_traffic_group(
+            client=self.http_client,
+            params=params,
+        )
+
+    def list_traffic_groups(self) -> TrafficGroupsList:
+        """list_traffic_groups retrieves all traffic groups.
+
+        Note: requires a `Management` API key."""
+        return list_traffic_groups(client=self.http_client)
+
+    def update_traffic_group(
+        self, *, traffic_group_id: str, params: UpdateTrafficGroupParams
+    ) -> TrafficGroup:
+        """update_traffic_group updates an existing traffic group.
+
+        Note: requires a `Management` API key."""
+        return update_traffic_group(
+            client=self.http_client,
+            traffic_group_id=traffic_group_id,
+            params=params,
+        )
+
+    def delete_traffic_group(self, *, traffic_group_id: str) -> None:
+        """delete_traffic_group deletes a traffic group and all associated targets.
+
+        Note: requires a `Management` API key."""
+        delete_traffic_group(
+            client=self.http_client,
+            traffic_group_id=traffic_group_id,
+        )
+
+    def create_traffic_group_target(
+        self,
+        *,
+        traffic_group_id: str,
+        params: CreateTrafficGroupTargetParams,
+    ) -> TrafficGroupTarget:
+        """create_traffic_group_target adds a target to a traffic group.
+
+        Note: requires a `Management` API key."""
+        return create_traffic_group_target(
+            client=self.http_client,
+            traffic_group_id=traffic_group_id,
+            params=params,
+        )
+
+    def delete_traffic_group_target(
+        self, *, traffic_group_id: str, target_id: str
+    ) -> None:
+        """delete_traffic_group_target removes a target from a traffic group.
+
+        Note: requires a `Management` API key."""
+        delete_traffic_group_target(
+            client=self.http_client,
+            traffic_group_id=traffic_group_id,
+            target_id=target_id,
         )
