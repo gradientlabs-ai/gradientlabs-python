@@ -1,0 +1,49 @@
+name: Claude Dependabot Alert Remediation
+
+on:
+  schedule:
+    - cron: "0 9 1 * *" # 1st of each month at 9am UTC
+  workflow_dispatch:
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      security-events: read
+      id-token: write
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Claude Dependabot Alert Remediation
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          show_full_output: true
+          github_token: ${{ github.token }}
+          allowed_bots: "claude,graphite-app"
+          claude_args: '--max-turns 100 --allowedTools "Grep,Glob,Read,Edit,Write,Bash(git *),Bash(uv *),Bash(gh pr create:*),Bash(gh pr view:*),Bash(gh pr list:*),Bash(gh api *)"'
+          prompt: |
+            1. Fetch all open Dependabot alerts for this repo using:
+               `gh api repos/{owner}/{repo}/dependabot/alerts --paginate -q '.[] | select(.state=="open")'`
+               You can derive the owner and repo from the git remote URL.
+            2. If there are no open alerts, stop here — no PR is needed.
+            3. For each alert, identify the affected manifest path, package name, ecosystem, current version, and minimum patched version.
+            4. This repository uses Python with uv. Update vulnerable dependencies using the most appropriate manifest for the alert:
+               - For `pyproject.toml` dependencies, use `uv add '<package>>=<patched_version>'` from the directory containing that manifest.
+               - For `requirements.txt` style manifests, update the pinned requirement entry directly if needed.
+            5. After applying upgrades in a directory, refresh lockfiles with `uv lock` from that directory when applicable.
+            6. If a manifest path referenced in an alert does not exist in the repo, note it as stale and skip it.
+            7. Create a new branch and a PR with the following:
+               - Title: `gradient-labs dependabot alert remediation <YYYY-MM-DD>`
+               - Description: A table listing each alert number, severity, package, old version, new version, ecosystem, and which manifest was updated. Note any stale alerts that were skipped.
