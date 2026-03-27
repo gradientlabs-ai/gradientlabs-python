@@ -55,11 +55,11 @@ from ._procedure_version_list import (
 )
 from ._procedure_version_live_set import set_procedure_live_version
 from ._procedure_version_live_unset import unset_procedure_live_version
-from ._procedure_version_experiment_set import (
-    set_procedure_experiment_version,
-    SetProcedureExperimentVersionParams,
+from ._procedure_version_gated_set import (
+    set_procedure_gated_version,
+    SetProcedureGatedVersionParams,
 )
-from ._procedure_version_experiment_unset import unset_procedure_experiment_version
+from ._procedure_version_gated_unset import unset_procedure_gated_version
 
 from ._tool_create import create_tool
 from ._tool_delete import delete_tool
@@ -431,7 +431,7 @@ class Client:
         """list_procedure_versions lists existing non-ephemeral versions of a procedure.
 
         Each procedure can have multiple versions, with one marked as "live" (production)
-        and optionally one marked as "experimental" for controlled testing.
+        and optionally one marked as "gated" for controlled testing.
 
         Note: requires a `Management` API key."""
         return list_procedure_versions(
@@ -442,9 +442,9 @@ class Client:
     def set_procedure_live_version(self, *, procedure_id: str, version: int) -> None:
         """set_procedure_live_version promotes a specific version to be the live (production) version.
 
-        The live version is the default version used by the agent when no experimental
-        versions are active. If the specified version is currently marked as experimental,
-        it will be promoted to live and will no longer be considered experimental.
+        The live version is the default version used by the agent when no gated
+        versions are active. If the specified version is currently marked as gated,
+        the version will be promoted to live and will no longer be considered gated.
 
         Note: requires a `Management` API key."""
         set_procedure_live_version(
@@ -457,7 +457,7 @@ class Client:
         """unset_procedure_live_version removes the specified version from being the live revision.
 
         Once unset, the version will no longer be used by default by the agent.
-        This does not delete the version or affect its experimental status (if any).
+        Unsetting the live version does not delete the version or affect the gated status (if any).
 
         Note: requires a `Management` API key."""
         unset_procedure_live_version(
@@ -466,36 +466,36 @@ class Client:
             version=version,
         )
 
-    def set_procedure_experiment_version(
+    def set_procedure_gated_version(
         self,
         *,
         procedure_id: str,
         version: int,
-        params: SetProcedureExperimentVersionParams,
+        params: SetProcedureGatedVersionParams,
     ) -> None:
-        """set_procedure_experiment_version marks a version as experimental for A/B testing.
+        """set_procedure_gated_version marks a version as gated for A/B testing.
 
-        Experimental versions are served to a limited number of conversations per day.
-        If an experiment already exists, it will only be replaced if the 'replace'
-        flag is set to True.
+        Gated versions are served to a limited number of conversations per day.
+        If a gated version already exists, the gated version will only be replaced
+        if the 'replace' flag is set to True.
 
         Note: requires a `Management` API key."""
-        set_procedure_experiment_version(
+        set_procedure_gated_version(
             client=self.http_client,
             procedure_id=procedure_id,
             version=version,
             params=params,
         )
 
-    def unset_procedure_experiment_version(
+    def unset_procedure_gated_version(
         self, *, procedure_id: str, version: int
     ) -> None:
-        """unset_procedure_experiment_version removes experimental status from a version.
+        """unset_procedure_gated_version removes gated status from a version.
 
-        Once unset, the version will no longer be used for A/B testing or served as an experiment.
+        Once unset, the version will no longer be used for A/B testing or served as a gated version.
 
         Note: requires a `Management` API key."""
-        unset_procedure_experiment_version(
+        unset_procedure_gated_version(
             client=self.http_client,
             procedure_id=procedure_id,
             version=version,

@@ -73,11 +73,11 @@ class Procedure:
 
 @dataclass_json
 @dataclass(frozen=True)
-class ExperimentalConfig:
-    """Configuration for experimental procedure versions."""
+class GatedConfig:
+    """Configuration for gated procedure versions."""
 
     # max_daily_conversations is the maximum number of conversations per day
-    # that can use this experimental version.
+    # that can use the gated version.
     max_daily_conversations: int
 
 
@@ -108,14 +108,14 @@ class ProcedureVersion:
         )
     )
 
-    # experimental indicates whether this is an experimental version that is used before "live",
-    # within the daily limit defined in experimental_config.
-    experimental: bool
+    # gated indicates whether the version is a gated version that is used before "live",
+    # within the daily limit defined in gated_config.
+    gated: bool
 
-    # experimental_config defines how the experimental version is limited.
-    # Relevant only if experimental == True.
-    experimental_config: ExperimentalConfig | None
+    # gated_config defines how the gated version is limited.
+    # gated_config is relevant only if gated == True.
+    gated_config: GatedConfig | None
 
-    # live indicates whether this is the "production" version that is used by the agent by default,
-    # if there are no experimental versions or all of them have exceeded their limit.
+    # live indicates whether the version is the "production" version used by the agent by default,
+    # if there are no gated versions or all gated versions have exceeded their limit.
     live: bool

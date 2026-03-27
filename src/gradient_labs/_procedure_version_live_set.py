@@ -7,13 +7,14 @@ def set_procedure_live_version(
     """set_procedure_live_version promotes a specific version of a procedure to be the
     live (production) version that the AI agent will use for new conversations.
 
-    The live version is the default version used by the agent when no experimental
-    versions are active. If the specified version is currently marked as experimental,
-    it will be promoted to live and will no longer be considered experimental.
+    The live version is the default version used by the agent when no gated
+    versions are active. If the specified version is currently marked as gated,
+    the version will be promoted to live and will no longer be considered gated.
 
-    This is typically used after testing a procedure version in experimental mode
-    and confirming it works correctly. Once live, the procedure version will be
-    used for all new conversations that match the procedure's criteria.
+    set_procedure_live_version is typically used after testing a procedure version
+    in gated mode and confirming the version works correctly. Once live, the
+    procedure version will be used for all new conversations that match the
+    procedure's criteria.
 
     Note: requires a `Management` API key."""
     client.post(
