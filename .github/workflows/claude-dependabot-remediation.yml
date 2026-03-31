@@ -37,24 +37,47 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          # Fetch all open Dependabot alerts as newline-delimited JSON objects
+          # Fetch all open Dependabot alerts as newline-delimited JSON objects.
           # Note: GITHUB_TOKEN cannot access Dependabot alerts; uses a GitHub App
           # installation token (org-owned, no individual user dependency).
-          if ! ALERTS=$(gh api "repos/${{ github.repository }}/dependabot/alerts" \
+          if ! RAW_ALERTS=$(gh api "repos/${{ github.repository }}/dependabot/alerts" \
             --paginate \
             -q '.[] | select(.state=="open")' 2>&1); then
             echo "has_alerts=false" >> "$GITHUB_OUTPUT"
-            echo "::error::Failed to fetch Dependabot alerts. Ensure security-events: read is permitted for GITHUB_TOKEN in this org. API response: $ALERTS"
+            echo "::error::Failed to fetch Dependabot alerts. Ensure security-events: read is permitted for GITHUB_TOKEN in this org. API response: $RAW_ALERTS"
             exit 0
           fi
 
-          if [ -z "$ALERTS" ]; then
+          if [ -z "$RAW_ALERTS" ]; then
             echo "has_alerts=false" >> "$GITHUB_OUTPUT"
             echo "No open Dependabot alerts found. Skipping Claude step."
             exit 0
           fi
 
+          # Pre-process: extract only the fields Claude needs, filtering out
+          # development-scoped dependencies (not in production).
+          ALERTS=$(echo "$RAW_ALERTS" | jq -c 'select(
+              .dependency.scope != "development"
+            ) | {
+              number: .number,
+              severity: .security_vulnerability.severity,
+              package: .dependency.package.name,
+              ecosystem: .dependency.package.ecosystem,
+              manifest: .dependency.manifest_path,
+              current_version: .security_vulnerability.vulnerable_version_range,
+              patched_version: .security_vulnerability.first_patched_version.identifier
+            }')
+
+          if [ -z "$ALERTS" ]; then
+            echo "has_alerts=false" >> "$GITHUB_OUTPUT"
+            echo "No actionable Dependabot alerts after filtering. Skipping Claude step."
+            exit 0
+          fi
+
+          ALERT_COUNT=$(echo "$ALERTS" | wc -l | tr -d ' ')
           echo "has_alerts=true" >> "$GITHUB_OUTPUT"
+          echo "alert_count=$ALERT_COUNT" >> "$GITHUB_OUTPUT"
+          echo "Found $ALERT_COUNT actionable alert(s)."
 
           # Collect Python manifest paths (excluding virtual envs and hidden dirs)
           MANIFESTS=$(find . \( -name pyproject.toml -o -name 'requirements*.txt' \) \
@@ -63,9 +86,9 @@ jobs:
             -not -path '*/__pycache__/*' \
             | sort | tr '\n' ' ')
 
-          # Write both to files so the prompt can reference them cleanly
-          echo "$ALERTS"    > /tmp/dependabot-alerts.txt
-          echo "$MANIFESTS" > /tmp/manifests.txt
+          # Write both to files in the workspace so Claude Code can access them.
+          echo "$ALERTS"    > dependabot-alerts.txt
+          echo "$MANIFESTS" > manifests.txt
 
       - name: Claude Dependabot Alert Remediation
         if: steps.ctx.outputs.has_alerts == 'true'
@@ -75,18 +98,18 @@ jobs:
           show_full_output: true
           github_token: ${{ github.token }}
           allowed_bots: "claude,graphite-app"
-          claude_args: '--max-turns 60 --allowedTools "Grep,Glob,Read,Edit,Write,Bash(git *),Bash(uv *),Bash(gh pr *),Bash(gh api *),Bash(cat /tmp/*)"'
+          claude_args: '--max-turns 60 --allowedTools "Grep,Glob,Read,Edit,Write,Bash(cd *),Bash(git *),Bash(uv *),Bash(gh pr *),Bash(gh api *)"'
           prompt: |
             The repo is ${{ github.repository }}.
 
-            Open Dependabot alerts have already been fetched and saved to /tmp/dependabot-alerts.txt (one JSON object per line).
-            The list of Python manifest files in this repo is in /tmp/manifests.txt.
+            There are ${{ steps.ctx.outputs.alert_count }} actionable Dependabot alerts in dependabot-alerts.txt (one JSON object per line, already filtered to production dependencies).
+            The list of Python manifest files in this repo is in manifests.txt.
 
-            Read both files, then for each alert:
+            Read both files (they are in the repo root working directory), then for each alert:
             1. Identify the affected manifest path, package name, ecosystem, current version, and minimum patched version.
-            2. If the manifest path does not appear in /tmp/manifests.txt, mark it as stale and skip it.
+            2. If the manifest path does not appear in manifests.txt, mark it as stale and skip it.
             3. This repository uses Python with uv. Update vulnerable dependencies using the most appropriate manifest for the alert:
-               - For `pyproject.toml` dependencies, use `uv add '<package>>=<patched_version>'` from the directory containing that manifest.
-               - For `requirements.txt` style manifests, update the pinned requirement entry directly if needed.
-            4. After applying upgrades in a directory, refresh lockfiles with `uv lock` from that directory when applicable.
-            5. Create a new branch and a PR titled `gradient-labs dependabot alert remediation <YYYY-MM-DD>` with a description table showing: alert number, severity, package, old version, new version, ecosystem, manifest updated. Note any stale alerts that were skipped.
+               - For `pyproject.toml` dependencies, use the Edit tool to add `"<package>>=<patched_version>"` directly to the `dependencies` list in the file. Do NOT use `uv add` — it requires shell characters that are blocked in this environment.
+               - For `requirements.txt` style manifests, update the pinned requirement entry directly using the Edit tool.
+            4. After editing a manifest, `cd` into the directory containing it, then run `uv lock` as a separate Bash command. Never chain commands with `&&`, `;`, or pipes.
+            5. Create a new branch and a PR titled `gradient-labs dependabot alert remediation <YYYY-MM-DD>` with a description table showing: alert number, severity, package, old version, new version, ecosystem, manifest updated. Note any stale or skipped alerts.
