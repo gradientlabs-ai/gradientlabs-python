@@ -11,11 +11,18 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      security-events: read
+      issues: read
       id-token: write
     steps:
       - name: Check out
         uses: actions/checkout@v4
+
+      - name: Generate GitHub App token for Dependabot alerts
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.DEPENDABOT_APP_ID }}
+          private-key: ${{ secrets.DEPENDABOT_APP_PRIVATE_KEY }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -28,12 +35,18 @@ jobs:
       - name: Fetch Dependabot alerts and repo context
         id: ctx
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           # Fetch all open Dependabot alerts as newline-delimited JSON objects
-          ALERTS=$(gh api "repos/${{ github.repository }}/dependabot/alerts" \
+          # Note: GITHUB_TOKEN cannot access Dependabot alerts; uses a GitHub App
+          # installation token (org-owned, no individual user dependency).
+          if ! ALERTS=$(gh api "repos/${{ github.repository }}/dependabot/alerts" \
             --paginate \
-            -q '.[] | select(.state=="open")' 2>/dev/null || true)
+            -q '.[] | select(.state=="open")' 2>&1); then
+            echo "has_alerts=false" >> "$GITHUB_OUTPUT"
+            echo "::error::Failed to fetch Dependabot alerts. Ensure security-events: read is permitted for GITHUB_TOKEN in this org. API response: $ALERTS"
+            exit 0
+          fi
 
           if [ -z "$ALERTS" ]; then
             echo "has_alerts=false" >> "$GITHUB_OUTPUT"
@@ -62,7 +75,7 @@ jobs:
           show_full_output: true
           github_token: ${{ github.token }}
           allowed_bots: "claude,graphite-app"
-          claude_args: '--max-turns 60 --allowedTools "Grep,Glob,Read,Edit,Write,Bash(git *),Bash(uv *),Bash(gh pr create:*),Bash(gh pr view:*),Bash(gh pr list:*),Bash(cat /tmp/*)"'
+          claude_args: '--max-turns 60 --allowedTools "Grep,Glob,Read,Edit,Write,Bash(git *),Bash(uv *),Bash(gh pr *),Bash(gh api *),Bash(cat /tmp/*)"'
           prompt: |
             The repo is ${{ github.repository }}.
 
