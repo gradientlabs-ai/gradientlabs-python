@@ -113,3 +113,19 @@ jobs:
                - For `requirements.txt` style manifests, update the pinned requirement entry directly using the Edit tool.
             4. After editing a manifest, `cd` into the directory containing it, then run `uv lock` as a separate Bash command. Never chain commands with `&&`, `;`, or pipes.
             5. Create a new branch and a PR titled `gradient-labs dependabot alert remediation <YYYY-MM-DD>` with a description table showing: alert number, severity, package, old version, new version, ecosystem, manifest updated. Note any stale or skipped alerts.
+
+      - name: Assign teams to remediation PR
+        if: steps.ctx.outputs.has_alerts == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_NUMBER=$(gh pr list \
+            --repo ${{ github.repository }} \
+            --search "dependabot alert remediation in:title" \
+            --json number \
+            --jq '.[0].number // empty')
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr edit "$PR_NUMBER" \
+              --repo ${{ github.repository }} \
+              --add-reviewer "gradientlabs-ai/backend-engineers,gradientlabs-ai/ai-engineers"
+          fi
