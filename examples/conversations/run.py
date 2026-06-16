@@ -72,7 +72,7 @@ client.add_message(
     participant_id="agent_123",
     attachments=[
         Attachment(
-            type=AttachmentType.FILE,
+            type=AttachmentType.DOCUMENT,
             file_name="bank_statement.pdf",
         )
     ],

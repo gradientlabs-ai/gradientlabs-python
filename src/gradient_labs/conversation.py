@@ -23,6 +23,7 @@ class ConversationChannel(str, Enum):
 
     EMAIL: str = "email"
     LIVE_CHAT: str = "web"
+    VOICE: str = "voice"
 
 
 class AttachmentType(str, Enum):
@@ -30,7 +31,8 @@ class AttachmentType(str, Enum):
     that a customer has uploaded into the conversation."""
 
     IMAGE: str = "image"
-    FILE: str = "file"
+    DOCUMENT: str = "document"
+    AUDIO: str = "audio"
 
 
 class ConversationEventType(str, Enum):
@@ -38,14 +40,6 @@ class ConversationEventType(str, Enum):
 
     # INTERNAL_NOTE means that an internal note has been added to the conversation.
     INTERNAL_NOTE: str = "internal-note"
-
-    # JOIN means the customer or human agent joined the
-    # conversation.
-    JOIN: str = "join"
-
-    # LEAVE means the customer or human agent left the
-    # conversation.
-    LEAVE: str = "leave"
 
     # DELIVERED means that a message has been delivered
     # to a participant
