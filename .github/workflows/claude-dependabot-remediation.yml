@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Generate GitHub App token for Dependabot alerts
         id: app-token
@@ -31,6 +33,17 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version-file: "pyproject.toml"
+
+      - name: Install Graphite CLI
+        run: npm install -g @withgraphite/graphite-cli@stable
+
+      - name: Configure git and Graphite
+        env:
+          GRAPHITE_AUTH_TOKEN: ${{ secrets.GRAPHITE_AUTH_TOKEN }}
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          gt auth --token "$GRAPHITE_AUTH_TOKEN"
 
       - name: Fetch Dependabot alerts and repo context
         id: ctx
@@ -90,6 +103,28 @@ jobs:
           echo "$ALERTS"    > dependabot-alerts.txt
           echo "$MANIFESTS" > manifests.txt
 
+      - name: Find existing remediation PR branch to stack on
+        id: find-base
+        if: steps.ctx.outputs.has_alerts == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          EXISTING_BRANCH=$(gh pr list \
+            --repo ${{ github.repository }} \
+            --search "dependabot alert remediation in:title" \
+            --state open \
+            --json number,headRefName \
+            --jq 'sort_by(.number) | last | .headRefName // empty')
+
+          if [ -n "$EXISTING_BRANCH" ]; then
+            echo "base_branch=$EXISTING_BRANCH" >> "$GITHUB_OUTPUT"
+            git fetch origin "$EXISTING_BRANCH":"$EXISTING_BRANCH"
+            echo "Stacking on existing remediation branch: $EXISTING_BRANCH"
+          else
+            echo "base_branch=main" >> "$GITHUB_OUTPUT"
+            echo "No existing remediation branch found, branching from main"
+          fi
+
       - name: Claude Dependabot Alert Remediation
         if: steps.ctx.outputs.has_alerts == 'true'
         uses: anthropics/claude-code-action@v1
@@ -98,7 +133,7 @@ jobs:
           show_full_output: true
           github_token: ${{ github.token }}
           allowed_bots: "claude,graphite-app"
-          claude_args: '--max-turns 60 --allowedTools "Grep,Glob,Read,Edit,Write,Bash(cd *),Bash(git *),Bash(uv *),Bash(gh pr *),Bash(gh api *)"'
+          claude_args: '--max-turns 60 --allowedTools "Grep,Glob,Read,Edit,Write,Bash(cd *),Bash(git *),Bash(uv *),Bash(gt *),Bash(gh pr edit *),Bash(gh api *)"'
           prompt: |
             The repo is ${{ github.repository }}.
 
@@ -112,7 +147,15 @@ jobs:
                - For `pyproject.toml` dependencies, use the Edit tool to add `"<package>>=<patched_version>"` directly to the `dependencies` list in the file. Do NOT use `uv add` — it requires shell characters that are blocked in this environment.
                - For `requirements.txt` style manifests, update the pinned requirement entry directly using the Edit tool.
             4. After editing a manifest, `cd` into the directory containing it, then run `uv lock` as a separate Bash command. Never chain commands with `&&`, `;`, or pipes.
-            5. Create a new branch and a PR titled `gradient-labs dependabot alert remediation <YYYY-MM-DD>` with a description table showing: alert number, severity, package, old version, new version, ecosystem, manifest updated. Note any stale or skipped alerts.
+            5. Create a stacked PR using Graphite — but ONLY if at least one manifest file was actually modified. Before creating any branch or PR, check whether any files were changed by running `git status --porcelain`. If the output is empty (no changes), stop here and print a summary of why each alert was skipped. Do NOT create a branch, commit, or PR when there are no file changes.
+               a. Run `git checkout ${{ steps.find-base.outputs.base_branch }}` to switch to the base branch.
+               b. Run `gt checkout -b gradient-labs-dependabot-remediation-<YYYY-MM-DD>` (using today's date) to create a new Graphite-tracked branch stacked on it.
+               c. Make all dependency changes and run `uv lock` as described above.
+               d. Run `git status --porcelain` to confirm there are actual file changes. If there are none, stop — do not commit or create a PR.
+               e. Stage and commit all changes with `git add -A` then `git commit -m "gradient-labs: dependabot alert remediation <YYYY-MM-DD>"`.
+               f. Run `gt submit --no-interactive` to create the PR via Graphite.
+               g. Find the newly created PR number with `gh api "repos/${{ github.repository }}/pulls" -q '[.[] | select(.head.ref | startswith("gradient-labs-dependabot-remediation"))] | sort_by(.number) | last | .number'`.
+               h. Update the PR body with `gh pr edit <number> --body "..."` — the body should include a markdown table with columns: alert number, severity, package, old version, new version, ecosystem, manifest updated. Note any stale or skipped alerts below the table.
 
       - name: Assign teams to remediation PR
         if: steps.ctx.outputs.has_alerts == 'true'
@@ -122,8 +165,9 @@ jobs:
           PR_NUMBER=$(gh pr list \
             --repo ${{ github.repository }} \
             --search "dependabot alert remediation in:title" \
+            --state open \
             --json number \
-            --jq '.[0].number // empty')
+            --jq 'sort_by(.number) | last | .number // empty')
           if [ -n "$PR_NUMBER" ]; then
             gh pr edit "$PR_NUMBER" \
               --repo ${{ github.repository }} \
