@@ -136,6 +136,9 @@ from ._traffic_group_exclusion_create import (
 )
 from ._traffic_group_exclusion_delete import delete_traffic_group_exclusion
 
+from .ip_addresses import IPAddresses
+from ._ip_addresses_list import list_ip_addresses
+
 from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
 from .note import Note
@@ -934,3 +937,12 @@ class Client:
             group_id=group_id,
             target_id=target_id,
         )
+
+    # ==================== IP Addresses ====================
+
+    def list_ip_addresses(self) -> IPAddresses:
+        """list_ip_addresses returns the CIDR ranges used by the API and the egress IP.
+
+        Useful for customers who need to whitelist Gradient Labs IPs in their firewall
+        or security-group rules."""
+        return list_ip_addresses(client=self.http_client)
