@@ -115,6 +115,7 @@ from ._back_office_task_create import (
     create_back_office_task,
     BackOfficeTaskCreateParams,
 )
+from ._back_office_task_read import read_back_office_task
 
 from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
@@ -827,4 +828,11 @@ class Client:
         return create_back_office_task(
             client=self.http_client,
             params=params,
+        )
+
+    def read_back_office_task(self, *, task_id: str) -> BackOfficeTask:
+        """read_back_office_task retrieves a back-office task by its external ID."""
+        return read_back_office_task(
+            client=self.http_client,
+            task_id=task_id,
         )
