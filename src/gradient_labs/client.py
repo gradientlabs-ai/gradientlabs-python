@@ -108,6 +108,14 @@ from ._voice_call_context_read import (
 )
 from .voice_call_context import VoiceCallContext
 
+from .back_office_task import (
+    BackOfficeTask,
+)
+from ._back_office_task_create import (
+    create_back_office_task,
+    BackOfficeTaskCreateParams,
+)
+
 from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
 from .note import Note
@@ -806,5 +814,17 @@ class Client:
         return read_voice_call_context(
             client=self.http_client,
             phone_number=phone_number,
+            params=params,
+        )
+
+    # ==================== Back-Office Task Operations ====================
+
+    def create_back_office_task(
+        self, *, params: BackOfficeTaskCreateParams
+    ) -> BackOfficeTask:
+        """create_back_office_task creates a new back-office task routed to a
+        configurable back-office agent."""
+        return create_back_office_task(
+            client=self.http_client,
             params=params,
         )
