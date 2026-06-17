@@ -1,4 +1,4 @@
-from typing import Any, Optional, List
+from typing import Optional, List
 
 from ._article_delete import delete_article
 from ._article_set_status import set_article_usage_status, SetArticleUsageStatusParams
@@ -28,8 +28,6 @@ from ._outbound_conversation_start import (
     start_outbound_conversation,
     StartOutboundConversationParams,
     StartOutboundConversationResponse,
-    CustomerSource,
-    SupportPlatform,
 )
 
 from ._handoff_target_upsert import upsert_hand_off_target, UpsertHandOffTargetParams
@@ -108,14 +106,9 @@ from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
 from .note import Note
 from .secret import Secret
-from .resource_type import ResourceType, Scope, RefreshStrategy, SourceConfig
+from .resource_type import ResourceType
 from .resource_source import (
     ResourceSource,
-    SourceType,
-    SchemaUpdateStrategy,
-    ResourceHTTPDefinition,
-    ResourceHTTPBodyDefinition,
-    ResourceWebhookDefinition,
 )
 from .webhook import Webhook, WebhookEvent
 
@@ -487,9 +480,7 @@ class Client:
             params=params,
         )
 
-    def unset_procedure_gated_version(
-        self, *, procedure_id: str, version: int
-    ) -> None:
+    def unset_procedure_gated_version(self, *, procedure_id: str, version: int) -> None:
         """unset_procedure_gated_version removes gated status from a version.
 
         Once unset, the version will no longer be used for A/B testing or served as a gated version.
@@ -733,9 +724,7 @@ class Client:
 
     # ==================== Traffic Group Operations ====================
 
-    def create_traffic_group(
-        self, *, params: CreateTrafficGroupParams
-    ) -> TrafficGroup:
+    def create_traffic_group(self, *, params: CreateTrafficGroupParams) -> TrafficGroup:
         """create_traffic_group creates a new traffic group.
 
         Note: requires a `Management` API key."""
