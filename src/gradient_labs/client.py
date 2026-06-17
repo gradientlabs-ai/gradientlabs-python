@@ -130,6 +130,12 @@ from ._terminology_substitution_update import (
 )
 from ._terminology_substitution_delete import delete_terminology_substitution
 
+from ._traffic_group_exclusion_create import (
+    create_traffic_group_exclusion,
+    TrafficGroupExclusionCreateParams,
+)
+from ._traffic_group_exclusion_delete import delete_traffic_group_exclusion
+
 from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
 from .note import Note
@@ -899,4 +905,32 @@ class Client:
         delete_terminology_substitution(
             client=self.http_client,
             substitution_id=substitution_id,
+        )
+
+    # ==================== Traffic Group Exclusions ====================
+
+    def create_traffic_group_exclusion(
+        self,
+        *,
+        group_id: str,
+        params: TrafficGroupExclusionCreateParams,
+    ) -> TrafficGroupTarget:
+        """create_traffic_group_exclusion prevents a procedure from being selected for
+        conversations in a traffic group, even when the procedure is unassigned/global.
+
+        Note: requires a `Management` API key."""
+        return create_traffic_group_exclusion(
+            client=self.http_client,
+            group_id=group_id,
+            params=params,
+        )
+
+    def delete_traffic_group_exclusion(self, *, group_id: str, target_id: str) -> None:
+        """delete_traffic_group_exclusion removes an exclusion from a traffic group.
+
+        Note: requires a `Management` API key."""
+        delete_traffic_group_exclusion(
+            client=self.http_client,
+            group_id=group_id,
+            target_id=target_id,
         )
