@@ -102,6 +102,12 @@ from ._traffic_group_target_create import (
 )
 from ._traffic_group_target_delete import delete_traffic_group_target
 
+from ._voice_call_context_read import (
+    read_voice_call_context,
+    VoiceCallContextReadParams,
+)
+from .voice_call_context import VoiceCallContext
+
 from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
 from .note import Note
@@ -785,4 +791,20 @@ class Client:
             client=self.http_client,
             traffic_group_id=traffic_group_id,
             target_id=target_id,
+        )
+
+    # ==================== Voice Call Context ====================
+
+    def read_voice_call_context(
+        self,
+        *,
+        phone_number: str,
+        params: Optional[VoiceCallContextReadParams] = None,
+    ) -> VoiceCallContext:
+        """read_voice_call_context returns the most recent voice call context for a
+        given phone number, for use in data-dip integrations with contact-centre platforms."""
+        return read_voice_call_context(
+            client=self.http_client,
+            phone_number=phone_number,
+            params=params,
         )
