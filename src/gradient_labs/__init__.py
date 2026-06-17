@@ -8,3 +8,9 @@ from .note import *
 from .traffic_group import *
 from .voice_call_context import *
 from .back_office_task import *
+from .procedure import *
+from .resource_source import *
+from .resource_type import *
+from .secret import *
+from .tool import *
+from .topic import *
