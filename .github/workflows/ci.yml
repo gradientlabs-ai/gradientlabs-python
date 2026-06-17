@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.DEPENDABOT_APP_ID }}
+          private-key: ${{ secrets.DEPENDABOT_APP_PRIVATE_KEY }}
+          owner: gradientlabs-ai
+
+      - name: Configure git to use HTTPS for gradientlabs-ai repos
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/gradientlabs-ai/".insteadOf "ssh://git@github.com/gradientlabs-ai/"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Check formatting
+        run: uvx ruff format --check .
+
+      - name: Lint
+        run: uvx ruff check .
+
+      - name: Run unit tests
+        run: |
+          if [ -d "tests" ]; then
+            uv run pytest tests/ -m unit
+            rc=$?
+            [ $rc -eq 0 ] || [ $rc -eq 5 ] || exit $rc  # rc=5 means no tests collected; treat as success
+          else
+            echo "No tests directory, skipping"
+          fi
