@@ -29,4 +29,4 @@ constraint-dependencies = [
 ]
 
 [tool.ruff.lint]
-ignore = ["D100", "D101"]
+ignore = ["D100", "D101", "F403", "F405"]

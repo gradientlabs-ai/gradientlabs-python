@@ -77,7 +77,7 @@ class Webhook:
             timestamp, signatures = cls._get_timestamp_and_signatures(
                 header, cls.SCHEME
             )
-        except:
+        except Exception:
             return WebhookSignature(valid=False, timestamp=None)
 
         signed_payload = "%d.%s" % (timestamp, payload)
