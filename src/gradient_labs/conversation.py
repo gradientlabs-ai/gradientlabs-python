@@ -94,7 +94,9 @@ class Conversation:
             mm_field=fields.DateTime(format="iso"),
         )
     )
-    is_active: bool = field(default=False, metadata=config(field_name="agent_is_active"))
+    is_active: bool = field(
+        default=False, metadata=config(field_name="agent_is_active")
+    )
     latest_intent: Optional[str] = None
     latest_hand_off_target: Optional[str] = field(
         default=None, metadata=config(field_name="latest_handoff_target")
