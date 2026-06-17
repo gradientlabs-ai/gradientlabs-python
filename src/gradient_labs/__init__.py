@@ -14,3 +14,4 @@ from .resource_type import *
 from .secret import *
 from .tool import *
 from .topic import *
+from .terminology_substitution import *

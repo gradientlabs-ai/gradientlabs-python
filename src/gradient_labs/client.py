@@ -117,6 +117,19 @@ from ._back_office_task_create import (
 )
 from ._back_office_task_read import read_back_office_task
 
+from .terminology_substitution import TerminologySubstitution
+from ._terminology_substitution_create import (
+    create_terminology_substitution,
+    TerminologySubstitutionCreateParams,
+)
+from ._terminology_substitutions_list import list_terminology_substitutions
+from ._terminology_substitution_read import read_terminology_substitution
+from ._terminology_substitution_update import (
+    update_terminology_substitution,
+    TerminologySubstitutionUpdateParams,
+)
+from ._terminology_substitution_delete import delete_terminology_substitution
+
 from ._http_client import HttpClient, API_BASE_URL
 from .tool import *
 from .note import Note
@@ -835,4 +848,55 @@ class Client:
         return read_back_office_task(
             client=self.http_client,
             task_id=task_id,
+        )
+
+    # ==================== Terminology Substitution Operations ====================
+
+    def create_terminology_substitution(
+        self, *, params: TerminologySubstitutionCreateParams
+    ) -> TerminologySubstitution:
+        """create_terminology_substitution creates a new terminology substitution.
+
+        Note: requires a `Management` API key."""
+        return create_terminology_substitution(
+            client=self.http_client,
+            params=params,
+        )
+
+    def list_terminology_substitutions(self) -> List[TerminologySubstitution]:
+        """list_terminology_substitutions returns all terminology substitutions.
+
+        Note: requires a `Management` API key."""
+        return list_terminology_substitutions(client=self.http_client)
+
+    def read_terminology_substitution(
+        self, *, substitution_id: str
+    ) -> TerminologySubstitution:
+        """read_terminology_substitution retrieves a terminology substitution by ID.
+
+        Note: requires a `Management` API key."""
+        return read_terminology_substitution(
+            client=self.http_client,
+            substitution_id=substitution_id,
+        )
+
+    def update_terminology_substitution(
+        self, *, substitution_id: str, params: TerminologySubstitutionUpdateParams
+    ) -> TerminologySubstitution:
+        """update_terminology_substitution updates an existing terminology substitution.
+
+        Note: requires a `Management` API key."""
+        return update_terminology_substitution(
+            client=self.http_client,
+            substitution_id=substitution_id,
+            params=params,
+        )
+
+    def delete_terminology_substitution(self, *, substitution_id: str) -> None:
+        """delete_terminology_substitution permanently deletes a terminology substitution.
+
+        Note: requires a `Management` API key."""
+        delete_terminology_substitution(
+            client=self.http_client,
+            substitution_id=substitution_id,
         )
