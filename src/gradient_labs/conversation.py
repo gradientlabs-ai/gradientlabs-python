@@ -55,6 +55,21 @@ class ConversationEventType(str, Enum):
 
 @dataclass_json
 @dataclass(frozen=True)
+class AgentMetadata:
+    intent: Optional[str] = None
+    intent_hand_off_target: Optional[str] = field(
+        default=None, metadata=config(field_name="intent_handoff_target")
+    )
+    hand_off_reason: Optional[str] = field(
+        default=None, metadata=config(field_name="handoff_reason")
+    )
+    hand_off_note: Optional[str] = field(
+        default=None, metadata=config(field_name="handoff_note")
+    )
+
+
+@dataclass_json
+@dataclass(frozen=True)
 class Conversation:
     """A conversation is the primary way that a customer
     talks to our AI agent.
@@ -78,6 +93,14 @@ class Conversation:
             decoder=datetime.fromisoformat,
             mm_field=fields.DateTime(format="iso"),
         )
+    )
+    is_active: bool = field(default=False, metadata=config(field_name="agent_is_active"))
+    latest_intent: Optional[str] = None
+    latest_hand_off_target: Optional[str] = field(
+        default=None, metadata=config(field_name="latest_handoff_target")
+    )
+    agent_metadata: Optional[AgentMetadata] = field(
+        default=None, metadata=config(field_name="latest_agent_metadata")
     )
 
 
