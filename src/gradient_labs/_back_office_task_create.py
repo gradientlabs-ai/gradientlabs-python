@@ -20,7 +20,11 @@ class BackOfficeTaskCreateAttachment:
 @dataclass(frozen=True)
 class BackOfficeTaskCreateParams:
     id: str
+    # agent_id is the agent (agent group, prefix `agent_`) that runs this task.
     agent_id: str
+    # procedure_id is the procedure (prefix `proc_`) within the agent to start the
+    # task from.
+    procedure_id: str
     input: Dict[str, Any]
     created: Optional[datetime] = None
     metadata: Optional[Dict[str, str]] = None
@@ -33,6 +37,7 @@ def create_back_office_task(
     body: Dict[str, Any] = {
         "id": params.id,
         "agent_id": params.agent_id,
+        "procedure_id": params.procedure_id,
         "input": params.input,
     }
     if params.created is not None:

@@ -114,6 +114,7 @@ from .back_office_task import (
 from ._back_office_task_create import (
     create_back_office_task,
     BackOfficeTaskCreateParams,
+    BackOfficeTaskCreateAttachment as BackOfficeTaskCreateAttachment,
 )
 from ._back_office_task_read import read_back_office_task
 
@@ -845,8 +846,11 @@ class Client:
     def create_back_office_task(
         self, *, params: BackOfficeTaskCreateParams
     ) -> BackOfficeTask:
-        """create_back_office_task creates a new back-office task routed to a
-        configurable back-office agent."""
+        """create_back_office_task creates a new back-office task.
+
+        params.agent_id is the agent (agent group, prefix `agent_`) that runs the
+        task, and params.procedure_id is the procedure (prefix `proc_`) within that
+        agent to start the task from."""
         return create_back_office_task(
             client=self.http_client,
             params=params,
