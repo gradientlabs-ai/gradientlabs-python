@@ -1,11 +1,51 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from datetime import datetime
+from enum import Enum
 
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 
 from ._http_client import HttpClient
 from .conversation import ParticipantType, ConversationChannel, Conversation
+
+
+class CustomerSupportPlatform(str, Enum):
+    """Identifies a third-party customer support platform that a customer
+    can be linked to via a CustomerSupportPlatformIdentifier."""
+
+    INTERCOM: str = "intercom"
+    ZENDESK: str = "zendesk"
+    SALESFORCE: str = "salesforce"
+    FRESHCHAT: str = "freshchat"
+    FRESHDESK: str = "freshdesk"
+
+
+class CustomerSupportPlatformIdentifierType(str, Enum):
+    """Identifies the kind of identifier within a customer support platform,
+    for platforms that have more than one kind of identifier."""
+
+    INTERCOM_LEAD: str = "intercom_lead"
+    INTERCOM_USER: str = "intercom_user"
+    ZENDESK_CONVERSATION_USER: str = "zendesk_conversation_user"
+    ZENDESK_SUPPORT_USER: str = "zendesk_support_user"
+    SALESFORCE_CONTACT_ID: str = "salesforce_contact_id"
+    SALESFORCE_ACCOUNT_ID: str = "salesforce_account_id"
+
+
+@dataclass_json
+@dataclass(frozen=True)
+class CustomerSupportPlatformIdentifier:
+    # support_platform identifies the third-party customer support platform
+    # this identifier belongs to.
+    support_platform: CustomerSupportPlatform
+
+    # value is the customer's external identifier in that platform.
+    value: str
+
+    # type optionally identifies which kind of identifier this is, for platforms
+    # that have more than one kind (e.g. Intercom leads vs. users). Omit for
+    # platforms that only have a single identifier kind (freshchat, freshdesk).
+    type: Optional[CustomerSupportPlatformIdentifierType] = None
 
 
 @dataclass_json
@@ -52,6 +92,13 @@ class StartConversationParams:
     # assigned to the specified traffic group, plus any procedures not assigned to any group.
     traffic_group_id: Optional[str] = None
 
+    # customer_support_platform_identifiers optionally links the customer to their
+    # record(s) in third-party customer support platforms (e.g. Intercom, Zendesk),
+    # alongside customer_id.
+    customer_support_platform_identifiers: Optional[
+        List[CustomerSupportPlatformIdentifier]
+    ] = None
+
 
 def start_conversation(
     *, client: HttpClient, params: StartConversationParams
@@ -69,6 +116,10 @@ def start_conversation(
         body["conversation_token"] = params.conversation_token
     if params.traffic_group_id is not None:
         body["traffic_group_id"] = params.traffic_group_id
+    if params.customer_support_platform_identifiers is not None:
+        body["customer_support_platform_identifiers"] = [
+            i.to_dict() for i in params.customer_support_platform_identifiers
+        ]
 
     rsp = client.post(
         path="conversations",

@@ -18,7 +18,13 @@ from ._conversation_finish import finish_conversation, FinishParams
 from ._conversation_rate import rate_conversation, RatingParams
 from ._conversation_resume import resume_conversation, ResumeParams
 from ._conversation_read import read_conversation, ReadParams
-from ._conversation_start import start_conversation, StartConversationParams
+from ._conversation_start import (
+    start_conversation,
+    StartConversationParams,
+    CustomerSupportPlatform as CustomerSupportPlatform,
+    CustomerSupportPlatformIdentifier as CustomerSupportPlatformIdentifier,
+    CustomerSupportPlatformIdentifierType as CustomerSupportPlatformIdentifierType,
+)
 from ._conversation_return_async_tool_result import (
     return_async_tool_result,
     ReturnAsyncToolResultParams,
