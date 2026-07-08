@@ -9,7 +9,7 @@ from ._http_client import HttpClient
 from .conversation import ParticipantType, ConversationChannel, Conversation
 
 
-class CustomerSupportPlatform(str, Enum):
+class SupportPlatform(str, Enum):
     """Identifies a third-party customer support platform that a customer
     can be linked to via a CustomerSupportPlatformIdentifier."""
 
@@ -37,7 +37,7 @@ class CustomerSupportPlatformIdentifierType(str, Enum):
 class CustomerSupportPlatformIdentifier:
     # support_platform identifies the third-party customer support platform
     # this identifier belongs to.
-    support_platform: CustomerSupportPlatform
+    support_platform: SupportPlatform
 
     # value is the customer's external identifier in that platform.
     value: str

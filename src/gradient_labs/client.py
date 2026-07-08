@@ -21,7 +21,7 @@ from ._conversation_read import read_conversation, ReadParams
 from ._conversation_start import (
     start_conversation,
     StartConversationParams,
-    CustomerSupportPlatform as CustomerSupportPlatform,
+    SupportPlatform as SupportPlatform,
     CustomerSupportPlatformIdentifier as CustomerSupportPlatformIdentifier,
     CustomerSupportPlatformIdentifierType as CustomerSupportPlatformIdentifierType,
 )

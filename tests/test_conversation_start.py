@@ -4,10 +4,10 @@ from gradient_labs import (
     Client,
     Conversation,
     ConversationChannel,
-    CustomerSupportPlatform,
     CustomerSupportPlatformIdentifier,
     CustomerSupportPlatformIdentifierType,
     StartConversationParams,
+    SupportPlatform,
 )
 
 
@@ -62,12 +62,12 @@ def test_start_conversation_includes_customer_support_platform_identifiers():
             channel=ConversationChannel.LIVE_CHAT,
             customer_support_platform_identifiers=[
                 CustomerSupportPlatformIdentifier(
-                    support_platform=CustomerSupportPlatform.INTERCOM,
+                    support_platform=SupportPlatform.INTERCOM,
                     type=CustomerSupportPlatformIdentifierType.INTERCOM_USER,
                     value="6953e162a988d9ef0f73ef9b",
                 ),
                 CustomerSupportPlatformIdentifier(
-                    support_platform=CustomerSupportPlatform.FRESHDESK,
+                    support_platform=SupportPlatform.FRESHDESK,
                     value="fd-789",
                 ),
             ],
