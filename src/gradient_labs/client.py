@@ -18,6 +18,7 @@ from ._conversation_finish import finish_conversation, FinishParams
 from ._conversation_rate import rate_conversation, RatingParams
 from ._conversation_resume import resume_conversation, ResumeParams
 from ._conversation_read import read_conversation, ReadParams
+from ._conversation_delete import delete_conversation
 from ._conversation_start import (
     start_conversation,
     StartConversationParams,
@@ -123,6 +124,7 @@ from ._back_office_task_create import (
     BackOfficeTaskCreateAttachment as BackOfficeTaskCreateAttachment,
 )
 from ._back_office_task_read import read_back_office_task
+from ._back_office_task_delete import delete_back_office_task
 
 from .terminology_substitution import TerminologySubstitution
 from ._terminology_substitution_create import (
@@ -315,6 +317,15 @@ class Client:
             client=self.http_client,
             conversation_id=conversation_id,
             params=params,
+        )
+
+    def delete_conversation(self, *, conversation_id: str) -> None:
+        """delete_conversation permanently deletes a conversation and its associated data.
+
+        Note: requires a `Management` API key."""
+        delete_conversation(
+            client=self.http_client,
+            conversation_id=conversation_id,
         )
 
     def start_conversation(
@@ -865,6 +876,15 @@ class Client:
     def read_back_office_task(self, *, task_id: str) -> BackOfficeTask:
         """read_back_office_task retrieves a back-office task by its external ID."""
         return read_back_office_task(
+            client=self.http_client,
+            task_id=task_id,
+        )
+
+    def delete_back_office_task(self, *, task_id: str) -> None:
+        """delete_back_office_task permanently deletes a back-office task and its associated data.
+
+        Note: requires a `Management` API key."""
+        delete_back_office_task(
             client=self.http_client,
             task_id=task_id,
         )
