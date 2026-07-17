@@ -320,7 +320,9 @@ class Client:
         )
 
     def delete_conversation(self, *, conversation_id: str) -> None:
-        """delete_conversation permanently deletes a conversation and its associated data.
+        """delete_conversation deletes a conversation and its associated messages, events and other data.
+
+        The deletion happens asynchronously and may not take effect immediately.
 
         Note: requires a `Management` API key."""
         delete_conversation(
@@ -881,7 +883,9 @@ class Client:
         )
 
     def delete_back_office_task(self, *, task_id: str) -> None:
-        """delete_back_office_task permanently deletes a back-office task and its associated data.
+        """delete_back_office_task deletes a back-office task and its associated input data, attachments, decisions and events.
+
+        The deletion happens asynchronously and may not take effect immediately.
 
         Note: requires a `Management` API key."""
         delete_back_office_task(
