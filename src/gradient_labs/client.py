@@ -30,6 +30,11 @@ from ._conversation_return_async_tool_result import (
     return_async_tool_result,
     ReturnAsyncToolResultParams,
 )
+from ._conversation_memories_upload import (
+    bulk_upload_conversation_memories,
+    BulkUploadMemoriesParams,
+    BulkUploadMemoriesResponse,
+)
 
 from ._outbound_conversation_start import (
     start_outbound_conversation,
@@ -390,6 +395,24 @@ class Client:
         This allows your system to perform long-running operations without blocking the
         conversation, and return results when they're ready."""
         return_async_tool_result(
+            client=self.http_client,
+            conversation_id=conversation_id,
+            params=params,
+        )
+
+    def bulk_upload_conversation_memories(
+        self,
+        *,
+        conversation_id: str,
+        params: BulkUploadMemoriesParams,
+    ) -> BulkUploadMemoriesResponse:
+        """bulk_upload_conversation_memories stores a batch of memories scoped to a
+        conversation, for the AI agent to search over on demand.
+
+        Each memory is stored verbatim as an arbitrary JSON object. Re-uploading
+        with the same idempotency_key returns the original upload instead of
+        inserting again."""
+        return bulk_upload_conversation_memories(
             client=self.http_client,
             conversation_id=conversation_id,
             params=params,
