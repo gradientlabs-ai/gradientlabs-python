@@ -30,6 +30,10 @@ from ._conversation_return_async_tool_result import (
     return_async_tool_result,
     ReturnAsyncToolResultParams,
 )
+from ._customer_memories_batch_create import (
+    batch_create_customer_memories,
+    CustomerMemory,
+)
 
 from ._outbound_conversation_start import (
     start_outbound_conversation,
@@ -393,6 +397,25 @@ class Client:
             client=self.http_client,
             conversation_id=conversation_id,
             params=params,
+        )
+
+    def batch_create_customer_memories(
+        self,
+        *,
+        customer_id: str,
+        memories: List[CustomerMemory],
+    ) -> None:
+        """batch_create_customer_memories stores a batch of memories scoped to a
+        customer, for the AI agent to search over on demand.
+
+        Each memory's data is stored verbatim as an arbitrary JSON object. The
+        call is asynchronous: it returns as soon as the batch is accepted, and
+        does not return an upload id or inserted count. It returns a 409 Conflict
+        if a batch is already being created for the same customer."""
+        batch_create_customer_memories(
+            client=self.http_client,
+            customer_id=customer_id,
+            memories=memories,
         )
 
     def upsert_hand_off_target(self, *, params: UpsertHandOffTargetParams) -> None:
