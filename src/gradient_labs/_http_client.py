@@ -1,5 +1,6 @@
 from typing import Any, Callable
 from datetime import datetime
+from importlib import metadata
 
 from pytz import UTC
 import requests
@@ -7,7 +8,14 @@ import requests
 from .errors import ResponseError
 
 API_BASE_URL = "https://api.gradient-labs.ai"
-USER_AGENT = "Gradient Labs Python"
+
+try:
+    _version = metadata.version("gradient-labs")
+except metadata.PackageNotFoundError:
+    # Running from a source tree with no installed distribution metadata.
+    _version = "unknown"
+
+USER_AGENT = f"Gradient Labs Python/{_version}"
 
 
 class HttpClient:
