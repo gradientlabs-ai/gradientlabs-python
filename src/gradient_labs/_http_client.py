@@ -1,5 +1,6 @@
 from typing import Any, Callable
 from datetime import datetime
+from importlib import metadata
 
 from pytz import UTC
 import requests
@@ -7,7 +8,14 @@ import requests
 from .errors import ResponseError
 
 API_BASE_URL = "https://api.gradient-labs.ai"
-USER_AGENT = "Gradient Labs Python"
+
+try:
+    _version = metadata.version("gradient-labs")
+except metadata.PackageNotFoundError:
+    # Running from a source tree with no installed distribution metadata.
+    _version = "unknown"
+
+USER_AGENT = f"Gradient Labs Python/{_version}"
 
 
 class HttpClient:
@@ -36,7 +44,10 @@ class HttpClient:
 
     @classmethod
     def localize(cls, timestamp: datetime) -> str:
-        return UTC.localize(timestamp).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        # Naive datetimes are taken to already be UTC, as they always have been.
+        if timestamp.tzinfo is None:
+            return timestamp.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        return timestamp.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     def _api_call(self, request_func: Callable, path: str, body: Any):
         url = f"{self.base_url}/{path}"

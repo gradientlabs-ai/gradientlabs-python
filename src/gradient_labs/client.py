@@ -32,8 +32,13 @@ from ._conversation_return_async_tool_result import (
 )
 
 from ._outbound_conversation_start import (
-    start_outbound_conversation,
-    StartOutboundConversationParams,
+    start_outbound_chat_conversation,
+    start_outbound_email_conversation,
+    start_outbound_phone_conversation,
+    OutboundSupportPlatform as OutboundSupportPlatform,
+    StartOutboundChatConversationParams,
+    StartOutboundEmailConversationParams,
+    StartOutboundPhoneConversationParams,
     StartOutboundConversationResponse,
 )
 
@@ -341,23 +346,65 @@ class Client:
             params=params,
         )
 
-    def start_outbound_conversation(
+    def start_outbound_chat_conversation(
         self,
         *,
-        params: StartOutboundConversationParams,
+        params: StartOutboundChatConversationParams,
     ) -> StartOutboundConversationResponse:
-        """Starts an outbound conversation.
+        """Starts an outbound live chat conversation.
 
-        Creates and starts a new outbound conversation where the AI agent proactively
-        initiates contact with a customer. The conversation follows the instructions
+        The AI agent proactively initiates contact with a customer, following the
+        instructions defined in the specified outbound procedure.
+
+        If body is provided, that message will be sent as the opening message.
+        Otherwise, the AI agent will generate one based on the procedure.
+
+        The customer is created, or matched to an existing record, from customer_id and
+        any customer_support_platform_identifiers you supply. The platform the chat is
+        delivered on needs an identifier for that customer."""
+        return start_outbound_chat_conversation(
+            client=self.http_client,
+            params=params,
+        )
+
+    def start_outbound_email_conversation(
+        self,
+        *,
+        params: StartOutboundEmailConversationParams,
+    ) -> StartOutboundConversationResponse:
+        """Starts an outbound email conversation.
+
+        The AI agent proactively initiates contact with a customer, following the
+        instructions defined in the specified outbound procedure.
+
+        If body and subject are provided, that email will be sent as the opening
+        message. Otherwise, the AI agent will write one based on the procedure.
+
+        The customer is created, or matched to an existing record, from customer_id and
+        any customer_support_platform_identifiers you supply. The platform the email is
+        sent from needs an identifier for that customer, so sending from Zendesk needs a
+        Zendesk identifier, and so on."""
+        return start_outbound_email_conversation(
+            client=self.http_client,
+            params=params,
+        )
+
+    def start_outbound_phone_conversation(
+        self,
+        *,
+        params: StartOutboundPhoneConversationParams,
+    ) -> StartOutboundConversationResponse:
+        """Places an outbound phone call.
+
+        The AI agent proactively contacts a customer, following the instructions
         defined in the specified outbound procedure.
 
-        If support_platform is not provided, the system will automatically select the
-        highest priority platform that has integration settings configured for your company.
+        from_phone_number must be a phone number already provisioned for your company.
 
-        If body and subject are provided, that message will be sent as the initial message.
-        Otherwise, the AI agent will generate an appropriate initial message based on the procedure."""
-        return start_outbound_conversation(
+        The customer is created, or matched to an existing record, from customer_id and
+        any customer_support_platform_identifiers you supply. The dialled number is
+        recorded against that same customer."""
+        return start_outbound_phone_conversation(
             client=self.http_client,
             params=params,
         )
