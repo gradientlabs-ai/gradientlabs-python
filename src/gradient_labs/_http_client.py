@@ -44,7 +44,10 @@ class HttpClient:
 
     @classmethod
     def localize(cls, timestamp: datetime) -> str:
-        return UTC.localize(timestamp).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        # Naive datetimes are taken to already be UTC, as they always have been.
+        if timestamp.tzinfo is None:
+            return timestamp.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        return timestamp.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     def _api_call(self, request_func: Callable, path: str, body: Any):
         url = f"{self.base_url}/{path}"
