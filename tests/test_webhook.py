@@ -269,3 +269,36 @@ class TestParseEvent:
                 },
             ),
         )
+
+
+class TestMalformedSignatureHeaders:
+    @pytest.mark.parametrize(
+        "header",
+        [
+            "t=253402300800,v1=00",  # start of year 10000
+            "t=" + "1" + "0" * 30 + ",v1=00",  # overflows time_t
+            "t=-99999999999,v1=00",  # before year 1
+            "t=1699291314,v1=é",  # non-ASCII signature
+        ],
+    )
+    def test_parse_signature_header_is_invalid(self, header):
+        signature = Webhook.parse_signature_header(
+            payload="{}", header=header, signing_key=WEBHOOK_KEY
+        )
+        assert not signature.valid
+        assert signature.timestamp is None
+
+    @pytest.mark.parametrize(
+        "header",
+        [
+            "t=253402300800,v1=00",
+            "t=" + "1" + "0" * 30 + ",v1=00",
+            "t=-99999999999,v1=00",
+            "t=1699291314,v1=é",
+        ],
+    )
+    def test_parse_event_raises_signature_error(self, header):
+        with pytest.raises(SignatureVerificationError):
+            Webhook.parse_event(
+                payload="{}", signature_header=header, signing_key=WEBHOOK_KEY
+            )
