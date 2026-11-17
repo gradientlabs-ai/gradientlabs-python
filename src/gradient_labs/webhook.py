@@ -77,15 +77,22 @@ class Webhook:
             timestamp, signatures = cls._get_timestamp_and_signatures(
                 header, cls.SCHEME
             )
+            # Not every integer is a representable datetime (e.g. year 10000).
+            parsed_timestamp = datetime.fromtimestamp(timestamp, UTC)
         except Exception:
             return WebhookSignature(valid=False, timestamp=None)
 
         signed_payload = "%d.%s" % (timestamp, payload)
         expected_sig = cls._compute_signature(signed_payload, signing_key)
 
-        valid = any(hmac.compare_digest(expected_sig, s) for s in signatures)
+        try:
+            valid = any(hmac.compare_digest(expected_sig, s) for s in signatures)
+        except TypeError:
+            # e.g. a signature containing non-ASCII characters.
+            return WebhookSignature(valid=False, timestamp=None)
+
         return WebhookSignature(
-            timestamp=datetime.fromtimestamp(timestamp, UTC),
+            timestamp=parsed_timestamp,
             valid=valid,
         )
 
