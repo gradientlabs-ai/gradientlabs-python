@@ -181,7 +181,7 @@ wheels = [
 
 [[package]]
 name = "gradient-labs"
-version = "0.12.2"
+version = "0.13.0"
 source = { editable = "." }
 dependencies = [
     { name = "dataclasses-json" },
