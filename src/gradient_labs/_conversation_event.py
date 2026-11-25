@@ -30,8 +30,7 @@ class EventParams:
     # IdempotencyKey optionally enables you to safely retry requests
     idempotency_key: Optional[str] = None
 
-    # Body optionally allows adding content (text) to the event. This is
-    # required for the
+    # Internal notes require a message body.
     body: Optional[str] = None
 
 

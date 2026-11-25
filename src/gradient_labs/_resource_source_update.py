@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, TypedDict
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 
@@ -9,6 +9,10 @@ from .resource_source import (
     ResourceHTTPDefinition,
     ResourceWebhookDefinition,
 )
+
+
+class ResourceSourceSchemaUpdate(TypedDict, total=False):
+    raw: Dict[str, Any]
 
 
 @dataclass_json
@@ -41,7 +45,7 @@ class UpdateResourceSourceParams:
     attribute_descriptions: Optional[Dict[str, str]] = None
 
     # Schema is the schema of the resource source.
-    schema: Optional[Any] = None
+    schema: Optional[ResourceSourceSchemaUpdate] = None
 
 
 def update_resource_source(

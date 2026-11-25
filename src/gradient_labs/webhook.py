@@ -63,6 +63,14 @@ class Webhook:
             data["data"] = ConversationFinishedEvent.from_dict(data["data"])
         elif data["type"] == "action.execute":
             data["data"] = ActionExecuteEvent.from_dict(data["data"])
+        elif data["type"] == "back-office-task.complete":
+            data["data"] = BackOfficeTaskCompleteEvent.from_dict(data["data"])
+        elif data["type"] == "back-office-task.hand-off":
+            data["data"] = BackOfficeTaskHandOffEvent.from_dict(data["data"])
+        elif data["type"] == "back-office-task.fail":
+            data["data"] = BackOfficeTaskFailEvent.from_dict(data["data"])
+        elif data["type"] == "conversation.start":
+            data["data"] = ConversationStartEvent.from_dict(data["data"])
         return WebhookEvent.from_dict(data)
 
     @classmethod

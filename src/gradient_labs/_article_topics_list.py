@@ -1,7 +1,7 @@
 from typing import List, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-from dataclasses_json import dataclass_json
+from dataclasses_json import dataclass_json, config
 
 from .topic import Topic
 from ._http_client import HttpClient
@@ -24,7 +24,8 @@ class ListTopicsParams:
 class ListTopicsResponse:
     """Response containing a list of topics."""
 
-    topics: List[Topic]
+    # The API names this field `Topics`.
+    topics: List[Topic] = field(metadata=config(field_name="Topics"))
 
 
 def list_topics(

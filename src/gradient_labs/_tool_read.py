@@ -1,12 +1,20 @@
+from typing import Optional
+
 from ._http_client import HttpClient
 from .tool import Tool
 
 
-def read_tool(*, client: HttpClient, tool_id: str) -> Tool:
-    """read_tool retrieves a new tool.
+def read_tool(
+    *, client: HttpClient, tool_id: str, version: Optional[int] = None
+) -> Tool:
+    """read_tool retrieves a tool. Leave version out to read its current version.
     Note: requires a `Management` API key."""
+    query_params = {}
+    if version is not None:
+        query_params["version"] = version
+
     rsp = client.get(
         path=f"tools/{tool_id}",
-        body={},
+        query_params=query_params,
     )
     return Tool.from_dict(rsp)

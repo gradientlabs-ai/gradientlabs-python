@@ -19,16 +19,16 @@ def read_voice_call_context(
     phone_number: str,
     params: Optional[VoiceCallContextReadParams] = None,
 ) -> VoiceCallContext:
-    path = f"voice/latest-call-context/{phone_number}"
-    query_parts = []
+    query_params = {}
     if params is not None:
         if params.lookback_seconds is not None:
-            query_parts.append(f"lookback_seconds={params.lookback_seconds}")
+            query_params["lookback_seconds"] = params.lookback_seconds
         if params.include_large_fields is not None:
-            query_parts.append(
-                f"include_large_fields={str(params.include_large_fields).lower()}"
-            )
-    if query_parts:
-        path = f"{path}?{'&'.join(query_parts)}"
-    rsp = client.get(path=path, body={})
+            query_params["include_large_fields"] = str(
+                params.include_large_fields
+            ).lower()
+    rsp = client.get(
+        path=f"voice/latest-call-context/{phone_number}",
+        query_params=query_params,
+    )
     return VoiceCallContext.from_dict(rsp)

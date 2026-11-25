@@ -1,6 +1,8 @@
-from typing import Optional, Any
+from typing import Optional, Any, List
 from collections import defaultdict
 from datetime import datetime
+
+from ._datetime import parse_datetime
 
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config
@@ -27,7 +29,7 @@ class UpsertArticleParams:
     created: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )
@@ -36,7 +38,7 @@ class UpsertArticleParams:
     last_edited: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )
@@ -61,6 +63,15 @@ class UpsertArticleParams:
     # data optionally gives additional meta-data about the article.
     data: Optional[Any] = field(default_factory=lambda: defaultdict(dict))
 
+    # public_url optionally links to where the article can be read online.
+    public_url: Optional[str] = None
+
+    # knowledge_base_ids optionally names the knowledge bases this article belongs to.
+    # Use the IDs of knowledge bases you created with create_knowledge_base, or
+    # "public-api". The list cannot be empty. If you leave it out, the article goes
+    # into the default "public-api" knowledge base, replacing any others it was in.
+    knowledge_base_ids: Optional[List[str]] = None
+
 
 def upsert_article(*, client: HttpClient, params: UpsertArticleParams) -> None:
     body = params.to_dict()
@@ -74,6 +85,10 @@ def upsert_article(*, client: HttpClient, params: UpsertArticleParams) -> None:
         body.pop("author_id")
     if params.body is None:
         body.pop("body")
+    if params.public_url is None:
+        body.pop("public_url")
+    if params.knowledge_base_ids is None:
+        body.pop("knowledge_base_ids")
 
     body["created"] = HttpClient.localize(params.created)
     body["last_edited"] = HttpClient.localize(params.last_edited)

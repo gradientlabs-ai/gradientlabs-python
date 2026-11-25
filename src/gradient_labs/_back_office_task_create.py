@@ -1,9 +1,10 @@
 from typing import Optional, Dict, Any, List
 from datetime import datetime
-from dataclasses import dataclass
-from dataclasses_json import dataclass_json
+from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json, config
 
 from ._http_client import HttpClient
+from ._without_none import without_none
 from .back_office_task import BackOfficeTask
 
 
@@ -13,7 +14,9 @@ class BackOfficeTaskCreateAttachment:
     file_name: str
     # Provide either url (remote file) or base64_contents (inline upload), not both.
     url: Optional[str] = None
-    base64_contents: Optional[str] = None
+    base64_contents: Optional[str] = field(
+        default=None, metadata=config(field_name="base_64_contents")
+    )
 
 
 @dataclass_json
@@ -25,7 +28,7 @@ class BackOfficeTaskCreateParams:
     # procedure_id is the procedure (prefix `proc_`) within the agent to start the
     # task from.
     procedure_id: str
-    input: Dict[str, Any]
+    input: Any
     created: Optional[datetime] = None
     metadata: Optional[Dict[str, str]] = None
     attachments: Optional[List[BackOfficeTaskCreateAttachment]] = None
@@ -45,6 +48,6 @@ def create_back_office_task(
     if params.metadata is not None:
         body["metadata"] = params.metadata
     if params.attachments is not None:
-        body["attachments"] = [a.to_dict() for a in params.attachments]
+        body["attachments"] = [without_none(a.to_dict()) for a in params.attachments]
     rsp = client.post(path="back-office-tasks", body=body)
     return BackOfficeTask.from_dict(rsp)

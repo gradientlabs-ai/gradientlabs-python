@@ -17,5 +17,5 @@ def delete_hand_off_target(
 ) -> None:
     _ = client.delete(
         path="hand-off-targets",
-        body=params.to_dict(),
+        query_params={"id": params.id},
     )

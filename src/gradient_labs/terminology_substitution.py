@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config
 from marshmallow import fields
 
+from ._datetime import parse_datetime
+
 
 @dataclass_json
 @dataclass(frozen=True)
@@ -15,14 +17,14 @@ class TerminologySubstitution:
     created: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )
     updated: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )

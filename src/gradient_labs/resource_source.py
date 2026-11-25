@@ -1,8 +1,11 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from enum import Enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from datetime import datetime
+
+from ._datetime import datetime_config
+from .resource_type import RefreshStrategy, Scope
 
 
 class SourceType(str, Enum):
@@ -73,6 +76,18 @@ class ResourceWebhookDefinition:
 
 
 @dataclass_json
+@dataclass(frozen=True)
+class ResourceManagedDefinition:
+    """ResourceManagedDefinition describes a source that Gradient Labs manages for you."""
+
+    # Enabled is whether the managed source is switched on.
+    enabled: bool
+
+    # Key identifies the managed source.
+    key: str
+
+
+@dataclass_json
 @dataclass
 class ResourceSource:
     """ResourceSource represents a resource source in the system."""
@@ -88,10 +103,10 @@ class ResourceSource:
     source_type: SourceType
 
     # Created is the timestamp when the resource source was created.
-    created: datetime
+    created: datetime = field(metadata=datetime_config)
 
     # Updated is the timestamp when the resource source was last updated.
-    updated: datetime
+    updated: datetime = field(metadata=datetime_config)
 
     # Description optional free-text field to describe the source in more detail.
     description: Optional[str] = None
@@ -112,3 +127,13 @@ class ResourceSource:
     # It is updated asynchronously as data is fetched from the source.
     # Nil if the schema has not been inferred yet. Includes attribute descriptions if present.
     schema: Optional[Any] = None
+
+    # AvailableRefreshStrategies lists the refresh strategies that resource types
+    # using this source can pick.
+    available_refresh_strategies: Optional[List[RefreshStrategy]] = None
+
+    # AvailableScopes lists the scopes that resource types using this source can pick.
+    available_scopes: Optional[List[Scope]] = None
+
+    # Managed is set when Gradient Labs manages the source for you.
+    managed: Optional[ResourceManagedDefinition] = None

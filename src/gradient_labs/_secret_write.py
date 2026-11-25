@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 
 from ._http_client import HttpClient
+from ._without_none import without_none
 from .secret import Secret, RefreshMechanismHTTP
 
 
@@ -38,7 +39,11 @@ def write_secret(*, client: HttpClient, params: WriteSecretParams) -> Secret:
     if params.expiry is not None:
         body["expiry"] = HttpClient.localize(params.expiry)
     if params.refresh_mechanism_http is not None:
-        body["refresh_mechanism_http"] = params.refresh_mechanism_http.to_dict()
+        refresh = without_none(params.refresh_mechanism_http.to_dict())
+        retry = refresh["request_definition"].get("retry")
+        if retry is not None:
+            retry.pop("max_attempts", None)
+        body["refresh_mechanism_http"] = refresh
 
     rsp = client.put(path=f"secrets/{params.name}", body=body)
     return Secret.from_dict(rsp)

@@ -34,6 +34,12 @@ class CreateResourceSourceParams:
     # AttributeDescriptions optional raw attribute-level descriptions.
     attribute_descriptions: Optional[Dict[str, str]] = None
 
+    # branch_id optionally makes the change on a git-backed branch, by its ID.
+    branch_id: Optional[str] = None
+
+    # branch_name optionally makes the change on a git-backed branch, by its name.
+    branch_name: Optional[str] = None
+
 
 def create_resource_source(
     *, client: HttpClient, params: CreateResourceSourceParams
@@ -55,5 +61,9 @@ def create_resource_source(
     if params.attribute_descriptions is not None:
         body["attribute_descriptions"] = params.attribute_descriptions
 
+    if params.branch_id is not None:
+        body["branch_id"] = params.branch_id
+    if params.branch_name is not None:
+        body["branch_name"] = params.branch_name
     rsp = client.post(path="resource-sources", body=body)
     return ResourceSource.from_dict(rsp)
