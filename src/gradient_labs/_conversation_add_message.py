@@ -2,41 +2,12 @@ from typing import Optional, List
 from datetime import datetime
 
 from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json, config
-from marshmallow import fields
+from dataclasses_json import dataclass_json
 
 from ._http_client import HttpClient
-from .conversation import AttachmentType, ParticipantType
-
-
-@dataclass_json
-@dataclass(frozen=True)
-class Attachment:
-    # type of file that was uploaded.
-    type: AttachmentType
-
-    # file_name is the name of the file that was uploaded, or an
-    # adequate placeholder for that name, which can be shown to reviewers.
-    file_name: str
-
-    # url is the publicly accessible URL where the attachment can be downloaded
-    # from. This should be a fully qualified URL. If not given, the AI agent will
-    # only know that an attachment exists, but will be unable to process it.
-    url: Optional[str] = ""
-
-    # summary is an optional short summary of the attachment.  This is only intended
-    # to be used if you cannot give us access to the raw attachment, but can
-    # run your own LLM completions on the attachment and send us a description instead.
-    #
-    # If a summary or description is provided, then there must be no URL.
-    summary: Optional[str] = ""
-
-    # description is an optional description of the attachment. This is only intended
-    # to be used if you cannot give us access to the raw attachment, but can
-    # run your own LLM completions on the attachment and send us a description instead.
-    #
-    # Chat to us first before using it!
-    description: Optional[str] = ""
+from .conversation import Attachment, ParticipantType
+from ._datetime import optional_datetime_config
+from ._without_none import without_none
 
 
 @dataclass_json
@@ -51,14 +22,14 @@ class AddMessageParams:
     id: str
 
     # body contains the message text.
-    body: str
+    body: Optional[str] = None
 
     # participant_id identifies the message sender.
-    participant_id: str
+    participant_id: Optional[str] = None
 
     # participant_type identifies the type of participant who sent this message.
-    # This cannot be set to ParticipantTypeAI.
-    participant_type: ParticipantType
+    # Use AI_AGENT only to replay a message already sent by the AI agent.
+    participant_type: Optional[ParticipantType] = None
 
     # created is the time at which the message was sent.
     created: Optional[datetime] = None
@@ -70,6 +41,14 @@ class AddMessageParams:
     # The latest token of the conversation will be echoed back in future Webhooks, under the header `X-GradientLabs-Token`,
     # as well as in HTTP Tools using templates.
     conversation_token: Optional[str] = None
+
+    # subject is the email subject line. It is only valid for email conversations,
+    # and rejected for every other channel.
+    subject: Optional[str] = None
+
+    def __post_init__(self):
+        if self.participant_type is None:
+            raise TypeError("participant_type is required")
 
 
 @dataclass_json
@@ -86,22 +65,11 @@ class Message:
     # body contains the message text.
     body: str
 
-    # participant_id identifies the message sender.
-    participant_id: str
-
     # participant_type identifies the type of participant who sent this message.
     participant_type: ParticipantType
 
-    # Created is the time at which the message was sent.
-    created: datetime = field(
-        metadata=config(
-            encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
-            mm_field=fields.DateTime(format="iso"),
-        )
-    )
-
-    # attachments contains any files that were uploaded with this message.
+    participant_id: str
+    created: Optional[datetime] = field(default=None, metadata=optional_datetime_config)
     attachments: Optional[List[Attachment]] = None
 
 
@@ -110,16 +78,20 @@ def add_message(
 ) -> Message:
     body = {
         "id": params.id,
-        "body": params.body,
-        "participant_id": params.participant_id,
         "participant_type": params.participant_type.value,
     }
+    if params.body is not None:
+        body["body"] = params.body
+    if params.participant_id is not None:
+        body["participant_id"] = params.participant_id
     if params.created is not None:
         body["created"] = HttpClient.localize(params.created)
     if params.attachments is not None:
-        body["attachments"] = [a.to_dict() for a in params.attachments]
+        body["attachments"] = [without_none(a.to_dict()) for a in params.attachments]
     if params.conversation_token is not None:
         body["conversation_token"] = params.conversation_token
+    if params.subject is not None:
+        body["subject"] = params.subject
 
     rsp = client.post(path=f"conversations/{conversation_id}/messages", body=body)
     return Message.from_dict(rsp)

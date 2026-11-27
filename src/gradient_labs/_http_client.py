@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 from datetime import datetime
 from importlib import metadata
 
@@ -30,17 +30,17 @@ class HttpClient:
         self.base_url = base_url
         self.timeout = timeout
 
-    def post(self, path: str, body: Any):
-        return self._api_call(requests.post, path, body)
+    def post(self, path: str, body: Any = None, query_params: Optional[dict] = None):
+        return self._api_call(requests.post, path, body, query_params)
 
-    def put(self, path: str, body: Any):
-        return self._api_call(requests.put, path, body)
+    def put(self, path: str, body: Any = None, query_params: Optional[dict] = None):
+        return self._api_call(requests.put, path, body, query_params)
 
-    def get(self, path: str, body: Any):
-        return self._api_call(requests.get, path, body)
+    def get(self, path: str, body: Any = None, query_params: Optional[dict] = None):
+        return self._api_call(requests.get, path, body, query_params)
 
-    def delete(self, path: str, body: Any):
-        return self._api_call(requests.delete, path, body)
+    def delete(self, path: str, body: Any = None, query_params: Optional[dict] = None):
+        return self._api_call(requests.delete, path, body, query_params)
 
     @classmethod
     def localize(cls, timestamp: datetime) -> str:
@@ -49,11 +49,18 @@ class HttpClient:
             return timestamp.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         return timestamp.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
-    def _api_call(self, request_func: Callable, path: str, body: Any):
+    def _api_call(
+        self,
+        request_func: Callable,
+        path: str,
+        body: Any,
+        query_params: Optional[dict] = None,
+    ):
         url = f"{self.base_url}/{path}"
         rsp = request_func(
             url,
             json=body,
+            params=query_params,
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self.api_key}",

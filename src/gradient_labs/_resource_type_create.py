@@ -29,6 +29,12 @@ class CreateResourceTypeParams:
     # IsEnabled indicates whether the resource type should be enabled.
     is_enabled: Optional[bool] = None
 
+    # branch_id optionally makes the change on a git-backed branch, by its ID.
+    branch_id: Optional[str] = None
+
+    # branch_name optionally makes the change on a git-backed branch, by its name.
+    branch_name: Optional[str] = None
+
 
 def create_resource_type(
     *, client: HttpClient, params: CreateResourceTypeParams
@@ -49,5 +55,9 @@ def create_resource_type(
     if params.is_enabled is not None:
         body["is_enabled"] = params.is_enabled
 
+    if params.branch_id is not None:
+        body["branch_id"] = params.branch_id
+    if params.branch_name is not None:
+        body["branch_name"] = params.branch_name
     rsp = client.post(path="resource-types", body=body)
     return ResourceType.from_dict(rsp)

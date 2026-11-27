@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config
 from marshmallow import fields
 
+from ._datetime import parse_datetime
+
 
 class BackOfficeTaskStatus(str, Enum):
     PENDING = "pending"
@@ -32,7 +34,7 @@ class BackOfficeTaskAttachment:
 # Reusable marshmallow config for optional datetime fields; avoids repeating allow_none/load_default.
 _optional_datetime_config = config(
     encoder=lambda x: x.isoformat() if x is not None else None,
-    decoder=lambda x: datetime.fromisoformat(x) if x is not None else None,
+    decoder=lambda x: parse_datetime(x) if x is not None else None,
     mm_field=fields.DateTime(format="iso", allow_none=True, load_default=None),
 )
 
@@ -47,7 +49,7 @@ class BackOfficeTask:
     created: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )

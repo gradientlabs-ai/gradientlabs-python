@@ -6,6 +6,10 @@ from dataclasses_json import dataclass_json, config
 from marshmallow import fields
 from typing import Any, Dict
 
+from ._datetime import parse_datetime
+
+from .back_office_task import BackOfficeTask
+
 
 class ParticipantType(str, Enum):
     """A participant type identifies the type of user who has
@@ -31,8 +35,7 @@ class AttachmentType(str, Enum):
     that a customer has uploaded into the conversation."""
 
     IMAGE: str = "image"
-    DOCUMENT: str = "document"
-    AUDIO: str = "audio"
+    FILE: str = "file"
 
 
 class ConversationEventType(str, Enum):
@@ -83,14 +86,14 @@ class Conversation:
     created: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )
     updated: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )
@@ -109,10 +112,34 @@ class Conversation:
 @dataclass_json
 @dataclass(frozen=True)
 class Attachment:
+    # type of file that was uploaded.
     type: AttachmentType
+
+    # file_name is the name of the file that was uploaded, or an
+    # adequate placeholder for that name, which can be shown to reviewers.
     file_name: str
 
+    # url is the publicly accessible URL where the attachment can be downloaded
+    # from. This should be a fully qualified URL. If not given, the AI agent will
+    # only know that an attachment exists, but will be unable to process it.
+    url: Optional[str] = None
 
+    # summary is an optional short summary of the attachment.  This is only intended
+    # to be used if you cannot give us access to the raw attachment, but can
+    # run your own LLM completions on the attachment and send us a description instead.
+    #
+    # If a summary or description is provided, then there must be no URL.
+    summary: Optional[str] = None
+
+    # description is an optional description of the attachment. This is only intended
+    # to be used if you cannot give us access to the raw attachment, but can
+    # run your own LLM completions on the attachment and send us a description instead.
+    #
+    # Chat to us first before using it!
+    description: Optional[str] = None
+
+
+@dataclass_json
 @dataclass(frozen=True)
 class WebhookConversation:
     """
@@ -127,6 +154,17 @@ class WebhookConversation:
     customer_id: str
     """
     The customer's assigned identifier.
+    """
+
+    customer_source: Optional[str] = None
+    """
+    The support platform the customer comes from, such as `intercom`. Only
+    present on action.execute events.
+    """
+
+    metadata: Optional[Any] = None
+    """
+    Extra details about the conversation. Only present on action.execute events.
     """
 
 
@@ -214,15 +252,33 @@ class ConversationFinishedEvent:
     Details of the conversation the event relates to.
     """
 
+    intent: Optional[str] = None
+    """
+    Intent is the most recent intent that was classified from the customer's conversation, if any.
+    """
+
+    reason_code: Optional[str] = None
+    """
+    reason_code is the code that describes why the conversation finished, if known.
+    """
+
+
+@dataclass_json
+@dataclass(frozen=True)
+class WebhookBackOfficeTask:
+    """
+    Details of the back-office task the event relates to.
+    """
+
+    id: str
+    """
+    The back-office task's identifier.
+    """
+
 
 @dataclass_json
 @dataclass(frozen=True)
 class ActionExecuteEvent:
-    conversation: WebhookConversation
-    """
-    Details of the conversation the event relates to.
-    """
-
     action: str
     """
     The action's given identifier.
@@ -231,6 +287,107 @@ class ActionExecuteEvent:
     params: Dict[str, Any]
     """
     Parameters the agent has generated for this action.
+    """
+
+    conversation: Optional[WebhookConversation] = None
+    """
+    Details of the conversation the event relates to. Not set when the action
+    runs for a back-office task.
+    """
+
+    back_office_task: Optional[WebhookBackOfficeTask] = None
+    """
+    Details of the back-office task the event relates to. Only set when the
+    action runs for a back-office task.
+    """
+
+
+@dataclass_json
+@dataclass(frozen=True)
+class BackOfficeTaskCompleteEvent:
+    """
+    An event that says a back-office task has completed.
+    """
+
+    back_office_task: BackOfficeTask
+    """
+    The back-office task.
+    """
+
+
+@dataclass_json
+@dataclass(frozen=True)
+class BackOfficeTaskHandOffEvent:
+    """
+    An event that says a back-office task has been handed off to a human.
+    """
+
+    back_office_task: BackOfficeTask
+    """
+    The back-office task.
+    """
+
+
+@dataclass_json
+@dataclass(frozen=True)
+class BackOfficeTaskFailEvent:
+    """
+    An event that says a back-office task has failed.
+    """
+
+    back_office_task: BackOfficeTask
+    """
+    The back-office task.
+    """
+
+
+@dataclass_json
+@dataclass(frozen=True)
+class ConversationStartEvent:
+    """
+    An event asking you to open an outbound conversation with a customer.
+    Answer it with a ConversationStartResponse.
+    """
+
+    customer_id: str
+    """
+    Your identifier for the customer to contact.
+    """
+
+    channel: ConversationChannel
+    """
+    How to contact the customer.
+    """
+
+    body: str
+    """
+    The first message to send to the customer.
+    """
+
+    subject: str
+    """
+    The subject line, for email conversations. Empty on other channels.
+    """
+
+    initiator_id: str
+    """
+    Who started the outbound conversation: `public-api` when you started it
+    through the API. Otherwise the Gradient Labs ID of the conversation or
+    back-office task that started it.
+    """
+
+
+@dataclass_json
+@dataclass(frozen=True)
+class ConversationStartResponse:
+    """
+    The body to answer a conversation.start event with.
+    """
+
+    conversation_id: str
+    """
+    Your identifier for the conversation you opened. Use it in later API calls
+    about this conversation.
     """
 
 
@@ -253,9 +410,7 @@ class WebhookEvent:
     """
 
     timestamp: datetime = field(
-        metadata=config(
-            decoder=datetime.fromisoformat, mm_field=fields.DateTime(format="iso")
-        )
+        metadata=config(decoder=parse_datetime, mm_field=fields.DateTime(format="iso"))
     )
     """
     Time at which this event was generated.

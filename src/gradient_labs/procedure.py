@@ -1,8 +1,11 @@
 from enum import Enum
+from typing import Optional
 from datetime import datetime
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config
 from marshmallow import fields
+
+from ._datetime import parse_datetime
 
 
 class ProcedureStatus(str, Enum):
@@ -16,19 +19,17 @@ class ProcedureStatus(str, Enum):
     # conversations.
     LIVE: str = "live"
 
+    # UNSAVED indicates the procedure has changes that have not been saved yet.
+    UNSAVED: str = "unsaved"
 
-@dataclass_json
-@dataclass(frozen=True)
-class UserDetails:
-    """UserDetails describes a procedure author."""
-
-    email: str
+    # ARCHIVED indicates the procedure has been archived.
+    ARCHIVED: str = "archived"
 
 
 @dataclass_json
 @dataclass(frozen=True)
 class Procedure:
-    """UserDetails describes a procedure author."""
+    """A procedure and its publication status."""
 
     # id uniquely identifies the procedure.
     id: str
@@ -39,14 +40,11 @@ class Procedure:
     # status is the overall status of the procedure.
     status: ProcedureStatus
 
-    # author is the user who originally created the procedure.
-    author: UserDetails
-
     # created is the time at which the procedure was originally created.
     created: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )
@@ -57,7 +55,7 @@ class Procedure:
     updated: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )
@@ -68,7 +66,10 @@ class Procedure:
 
     # max_daily_conversations is the maximum number of conversations that a procedure
     # can be used in on a given day, when it is rate limited.
-    max_daily_conversations: int
+    max_daily_conversations: Optional[int] = None
+
+    # description says when the procedure applies.
+    description: Optional[str] = None
 
 
 @dataclass_json
@@ -78,7 +79,9 @@ class GatedConfig:
 
     # max_daily_conversations is the maximum number of conversations per day
     # that can use the gated version.
-    max_daily_conversations: int
+    max_daily_conversations: int = field(
+        metadata=config(field_name="MaxDailyConversations")
+    )
 
 
 @dataclass_json
@@ -87,35 +90,38 @@ class ProcedureVersion:
     """A specific version of a procedure."""
 
     # name is the user-given name of the procedure at the time of this version.
-    name: str
+    name: str = field(metadata=config(field_name="Name"))
 
     # description of the procedure at the time of this version.
-    description: str
+    description: str = field(metadata=config(field_name="Description"))
 
     # version is a numeric identifier for the version. It is incremented every
     # time a new version of the procedure is saved.
-    version: int
+    version: int = field(metadata=config(field_name="Version"))
 
     # author is the ID of the user who created this version of the procedure.
-    author: str
+    author: str = field(metadata=config(field_name="Author"))
 
     # created is the time at which this version of the procedure was created.
     created: datetime = field(
         metadata=config(
+            field_name="Created",
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )
 
     # gated indicates whether the version is a gated version that is used before "live",
     # within the daily limit defined in gated_config.
-    gated: bool
+    gated: bool = field(metadata=config(field_name="Gated"))
 
     # gated_config defines how the gated version is limited.
     # gated_config is relevant only if gated == True.
-    gated_config: GatedConfig | None
+    gated_config: Optional[GatedConfig] = field(
+        metadata=config(field_name="GatedConfig")
+    )
 
     # live indicates whether the version is the "production" version used by the agent by default,
     # if there are no gated versions or all gated versions have exceeded their limit.
-    live: bool
+    live: bool = field(metadata=config(field_name="Live"))

@@ -5,9 +5,12 @@ from dataclasses_json import dataclass_json
 
 @dataclass_json
 @dataclass(frozen=True)
-class PaginationInfo:
+class ForwardPaginationInfo:
     # next is a cursor to retrieve the next page of results.
     next: Optional[str] = None
 
-    # prev is a cursor to retrieve the previous page of results.
+
+@dataclass_json
+@dataclass(frozen=True)
+class PaginationInfo(ForwardPaginationInfo):
     prev: Optional[str] = None

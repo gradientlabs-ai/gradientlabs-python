@@ -1,4 +1,4 @@
-from typing import Optional, Any, Dict
+from typing import Optional, Any
 from datetime import datetime
 
 from dataclasses import dataclass
@@ -22,11 +22,8 @@ class ReturnAsyncToolResultParams:
     # requests the tool execution.
     async_tool_execution_id: str
 
-    # payload is the result data from the tool execution as a JSON object.
-    # The structure of this object depends on your tool's implementation.
-    # The agent will use AI to extract relevant information from any well-formed
-    # JSON object.
-    payload: Dict[str, Any]
+    # Any JSON value returned by the tool.
+    payload: Any
 
     # timestamp optionally defines the time when the result was generated.
     # If not given, this will default to the current time.
@@ -50,7 +47,7 @@ def return_async_tool_result(
       results to conversations that are finished, failed, or cancelled.
     - Make sure to use the correct async_tool_execution_id from the action.execute
       webhook event.
-    - The result payload should be a valid JSON object containing the data the
+    - The result payload should be a valid JSON value containing the data the
       agent needs to continue the conversation.
     """
     body = {

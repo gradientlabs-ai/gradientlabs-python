@@ -1,6 +1,6 @@
 from typing import List
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 
 
@@ -25,3 +25,6 @@ class TrafficGroup:
 
     # targets is the list of targets assigned to the traffic group.
     targets: List[TrafficGroupTarget]
+
+    # excluded_targets is the list of targets that are kept out of the traffic group.
+    excluded_targets: List[TrafficGroupTarget] = field(default_factory=list)

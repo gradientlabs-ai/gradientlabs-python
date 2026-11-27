@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 
 from ._http_client import HttpClient
+from ._without_none import without_none
 
 
 @dataclass_json
@@ -27,6 +28,10 @@ class ToolExecuteParams:
     # arguments to execute the tool with.
     arguments: Optional[List[Argument]] = field(default_factory=lambda: [])
 
+    # token is an optional conversation-scoped token. When the tool sends one in its
+    # authorization header, the tool call only succeeds if you provide it here.
+    token: Optional[str] = None
+
 
 @dataclass_json
 @dataclass(frozen=True)
@@ -47,5 +52,7 @@ def execute_tool(*, client: HttpClient, params: ToolExecuteParams) -> ToolExecut
     """execute_tool executes a tool.
 
     Note: requires a `Management` API key."""
-    rsp = client.post(path=f"tools/{params.id}/execute", body=params.to_dict())
+    body = without_none(params.to_dict())
+    body.pop("id")
+    rsp = client.post(path=f"tools/{params.id}/execute", body=body)
     return ToolExecuteResult.from_dict(rsp)

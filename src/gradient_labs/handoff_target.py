@@ -1,3 +1,4 @@
+from typing import Optional
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 
@@ -11,3 +12,7 @@ class HandOffTarget:
 
     # name is the hand-off target’s name.
     name: str
+
+    # ref is a short reference for this target that never changes. It is stored in
+    # lowercase and is unique within your company.
+    ref: Optional[str] = None

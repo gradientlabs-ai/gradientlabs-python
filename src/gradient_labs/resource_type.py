@@ -1,8 +1,10 @@
 from typing import Optional, List, Any
 from enum import Enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from datetime import datetime
+
+from ._datetime import optional_datetime_config
 
 
 class Scope(str, Enum):
@@ -108,7 +110,7 @@ class ResourceType:
     is_enabled: bool = False
 
     # Created is when the resource type was created.
-    created: Optional[datetime] = None
+    created: Optional[datetime] = field(default=None, metadata=optional_datetime_config)
 
     # Updated is when the resource type was last updated.
-    updated: Optional[datetime] = None
+    updated: Optional[datetime] = field(default=None, metadata=optional_datetime_config)

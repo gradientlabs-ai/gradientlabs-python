@@ -1,8 +1,10 @@
-from typing import Optional
+from typing import Dict, List, Optional
 from enum import Enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from datetime import datetime
+
+from ._datetime import optional_datetime_config
 
 
 class NoteStatus(str, Enum):
@@ -39,19 +41,27 @@ class Note:
     url: Optional[str] = None
 
     # StartTime is when the note becomes relevant.
-    valid_from: Optional[datetime] = None
+    valid_from: Optional[datetime] = field(
+        default=None, metadata=optional_datetime_config
+    )
 
     # EndTime is when the note is no longer relevant.
-    valid_to: Optional[datetime] = None
+    valid_to: Optional[datetime] = field(
+        default=None, metadata=optional_datetime_config
+    )
 
     # LastModifiedBy identifies who last modified the note.
     last_modified_by: str = ""
 
     # Created is when the note was created.
-    created: Optional[datetime] = None
+    created: Optional[datetime] = field(default=None, metadata=optional_datetime_config)
 
     # Updated is when the note was last updated.
-    updated: Optional[datetime] = None
+    updated: Optional[datetime] = field(default=None, metadata=optional_datetime_config)
 
     # Status describes whether the note is draft, live, or deleted.
     status: NoteStatus = NoteStatus.DRAFT
+
+    # Attributes says which customers the note applies to, as a map from attribute key
+    # to the attribute values it applies to. Empty means every conversation.
+    attributes: Optional[Dict[str, List[str]]] = None

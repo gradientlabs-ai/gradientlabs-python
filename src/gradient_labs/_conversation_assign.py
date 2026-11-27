@@ -32,13 +32,15 @@ def assign_conversation(
     *, client: HttpClient, conversation_id: str, params: AssignmentParams
 ) -> None:
     """assigns a conversation to a participant."""
-    body = {"assignee_type": params.participant_type.value}
+    body = {"assignee_type": params.assignee_type.value}
     if params.assignee_id:
         body["assignee_id"] = params.assignee_id
     if params.timestamp:
         body["timestamp"] = HttpClient.localize(params.timestamp)
+    if params.reason:
+        body["reason"] = params.reason
 
     _ = client.put(
         path=f"conversations/{conversation_id}/assignee",
-        body=params.to_dict(),
+        body=body,
     )

@@ -1,3 +1,4 @@
+import warnings
 from typing import Optional, List
 
 from ._article_delete import delete_article
@@ -18,6 +19,7 @@ from ._conversation_finish import finish_conversation, FinishParams
 from ._conversation_rate import rate_conversation, RatingParams
 from ._conversation_resume import resume_conversation, ResumeParams
 from ._conversation_read import read_conversation, ReadParams
+from ._conversation_read_deprecated import read_conversation_deprecated
 from ._conversation_delete import delete_conversation
 from ._conversation_start import (
     start_conversation,
@@ -78,7 +80,33 @@ from ._tool_list import list_tools
 from ._tool_read import read_tool
 from ._tool_update import update_tool
 
+from ._customer_memories_list import list_customer_memories
+from ._customer_memories_batch_create import (
+    batch_create_customer_memories,
+    BatchCreateCustomerMemoriesDeprecatedParams,
+    BatchCreateCustomerMemoryDeprecated as BatchCreateCustomerMemoryDeprecated,
+)
+from ._customer_memories_batch_create_v2 import (
+    batch_create_customer_memories_v2,
+    BatchCreateCustomerMemoriesParams,
+    BatchCreateCustomerMemory as BatchCreateCustomerMemory,
+)
+from .customer_memory import CustomerMemoriesList
+
+from ._file_upload_begin import begin_file_upload, BeginFileUploadParams
+from ._file_list import list_files, FileListParams, FileListResponse
+from ._file_create import create_file, CreateFileParams
+from .file import File, FileUpload
+
+from ._knowledge_base_list import list_knowledge_bases, KnowledgeBasesList
+from ._knowledge_base_create import create_knowledge_base, CreateKnowledgeBaseParams
+from ._knowledge_base_read import read_knowledge_base
+from ._knowledge_base_update import update_knowledge_base, UpdateKnowledgeBaseParams
+from .knowledge_base import KnowledgeBase
+
 from ._note_create import create_note, CreateNoteParams
+from ._note_list import list_notes, NoteListParams, NoteListResponse
+from ._note_read import read_note
 from ._note_delete import delete_note
 from ._note_update import update_note, UpdateNoteParams
 from ._note_set_status import set_note_status, SetNoteStatusParams
@@ -322,6 +350,21 @@ class Client:
             client=self.http_client,
             conversation_id=conversation_id,
             params=params,
+        )
+
+    def read_conversation_deprecated(self, *, conversation_id: str) -> Conversation:
+        """Retrieves the conversation from the deprecated `GET /conversations/{id}`
+        endpoint.
+
+        Deprecated: use read_conversation."""
+        warnings.warn(
+            "read_conversation_deprecated is deprecated: use read_conversation",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return read_conversation_deprecated(
+            client=self.http_client,
+            conversation_id=conversation_id,
         )
 
     def delete_conversation(self, *, conversation_id: str) -> None:
@@ -623,13 +666,14 @@ class Client:
             params=params,
         )
 
-    def read_tool(self, *, tool_id: str) -> Tool:
-        """read_tool retrieves a new tool.
+    def read_tool(self, *, tool_id: str, version: Optional[int] = None) -> Tool:
+        """read_tool retrieves a tool. Leave version out to read its current version.
 
         Note: requires a `Management` API key."""
         return read_tool(
             client=self.http_client,
             tool_id=tool_id,
+            version=version,
         )
 
     def list_tools(self) -> List[Tool]:
@@ -641,12 +685,130 @@ class Client:
         )
 
     def update_tool(self, *, params: ToolUpdateParams) -> Tool:
-        """update_tool updates an existing tool. It allows callers to convert mock tools
-        into real tools, but not the other way around.
+        """Update the supplied fields of a tool.
 
         Note: requires a `Management` API key."""
         return update_tool(
             client=self.http_client,
+            params=params,
+        )
+
+    def list_customer_memories(self, *, customer_id: str) -> CustomerMemoriesList:
+        """list_customer_memories lists all memories retained for a customer.
+
+        Experimental. Requires an `Integration` API key."""
+        return list_customer_memories(
+            client=self.http_client,
+            customer_id=customer_id,
+        )
+
+    def batch_create_customer_memories(
+        self,
+        *,
+        customer_id: str,
+        params: BatchCreateCustomerMemoriesDeprecatedParams,
+    ) -> None:
+        """batch_create_customer_memories stores memories about a customer through the
+        deprecated `POST /customers/{customer_id}/memories` endpoint.
+
+        Deprecated: use batch_create_customer_memories_v2.
+
+        Experimental. Requires an `Integration` API key."""
+        warnings.warn(
+            "batch_create_customer_memories is deprecated: use batch_create_customer_memories_v2",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        batch_create_customer_memories(
+            client=self.http_client,
+            customer_id=customer_id,
+            params=params,
+        )
+
+    def batch_create_customer_memories_v2(
+        self,
+        *,
+        customer_id: str,
+        params: BatchCreateCustomerMemoriesParams,
+    ) -> None:
+        """batch_create_customer_memories_v2 stores memories about a customer.
+
+        Experimental. Requires an `Integration` API key."""
+        batch_create_customer_memories_v2(
+            client=self.http_client,
+            customer_id=customer_id,
+            params=params,
+        )
+
+    def begin_file_upload(
+        self, *, params: Optional[BeginFileUploadParams] = None
+    ) -> FileUpload:
+        """begin_file_upload starts uploading a file to your workspace. PUT the file to
+        the returned upload_url, then call create_file with the upload_id.
+
+        Note: requires a `Management` API key."""
+        return begin_file_upload(
+            client=self.http_client,
+            params=params,
+        )
+
+    def list_files(
+        self, *, params: Optional[FileListParams] = None
+    ) -> FileListResponse:
+        """list_files returns a page of the files uploaded to your workspace.
+
+        Note: requires a `Management` API key."""
+        return list_files(
+            client=self.http_client,
+            params=params,
+        )
+
+    def create_file(self, *, params: CreateFileParams) -> File:
+        """create_file turns an uploaded file into a workspace file.
+
+        Note: requires a `Management` API key."""
+        return create_file(
+            client=self.http_client,
+            params=params,
+        )
+
+    def list_knowledge_bases(self) -> KnowledgeBasesList:
+        """list_knowledge_bases returns all of your knowledge bases.
+
+        Note: requires an `Integration` or `Management` API key."""
+        return list_knowledge_bases(
+            client=self.http_client,
+        )
+
+    def create_knowledge_base(
+        self, *, params: CreateKnowledgeBaseParams
+    ) -> KnowledgeBase:
+        """create_knowledge_base creates a new knowledge base.
+
+        Note: requires an `Integration` or `Management` API key."""
+        return create_knowledge_base(
+            client=self.http_client,
+            params=params,
+        )
+
+    def read_knowledge_base(self, *, knowledge_base_id: str) -> KnowledgeBase:
+        """read_knowledge_base retrieves a knowledge base by your own ID for it.
+
+        Note: requires an `Integration` or `Management` API key."""
+        return read_knowledge_base(
+            client=self.http_client,
+            knowledge_base_id=knowledge_base_id,
+        )
+
+    def update_knowledge_base(
+        self, *, knowledge_base_id: str, params: UpdateKnowledgeBaseParams
+    ) -> KnowledgeBase:
+        """update_knowledge_base renames a knowledge base.
+
+        Note: requires an `Integration` or `Management` API key."""
+        return update_knowledge_base(
+            client=self.http_client,
+            knowledge_base_id=knowledge_base_id,
             params=params,
         )
 
@@ -663,6 +825,26 @@ class Client:
         return create_note(
             client=self.http_client,
             params=params,
+        )
+
+    def list_notes(
+        self, *, params: Optional[NoteListParams] = None
+    ) -> NoteListResponse:
+        """list_notes returns a page of the notes created by your company.
+
+        Note: requires a `Management` API key."""
+        return list_notes(
+            client=self.http_client,
+            params=params,
+        )
+
+    def read_note(self, *, note_id: str) -> Note:
+        """read_note retrieves a note by your own ID for it.
+
+        Note: requires a `Management` API key."""
+        return read_note(
+            client=self.http_client,
+            note_id=note_id,
         )
 
     def update_note(self, *, note_id: str, params: UpdateNoteParams) -> Note:

@@ -1,6 +1,8 @@
-from typing import Optional
+from typing import Any, Optional
 from collections import defaultdict
 from datetime import datetime
+
+from ._datetime import parse_datetime
 
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config
@@ -30,7 +32,7 @@ class ArticleTopicUpsertParams:
     created: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )
@@ -39,7 +41,7 @@ class ArticleTopicUpsertParams:
     last_edited: datetime = field(
         metadata=config(
             encoder=datetime.isoformat,
-            decoder=datetime.fromisoformat,
+            decoder=parse_datetime,
             mm_field=fields.DateTime(format="iso"),
         )
     )
@@ -51,13 +53,17 @@ class ArticleTopicUpsertParams:
     parent_id: Optional[str] = None
 
     # data optionally gives additional meta-data about the topic.
-    data: Optional[dict] = field(default_factory=lambda: defaultdict(dict))
+    data: Any = field(default_factory=lambda: defaultdict(dict))
+
+    public_url: Optional[str] = None
 
 
 def upsert_article_topic(
     *, client: HttpClient, params: ArticleTopicUpsertParams
 ) -> None:
     body = params.to_dict()
+    if params.public_url is None:
+        body.pop("public_url")
     if params.parent_id is None:
         body.pop("parent_id")
     if params.description is None:

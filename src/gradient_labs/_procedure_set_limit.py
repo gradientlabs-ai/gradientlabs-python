@@ -26,4 +26,4 @@ def set_procedure_limit(
         path=f"procedure/{procedure_id}/limit",
         body=params.to_dict(),
     )
-    return Procedure.from_dict(body)
+    return Procedure.from_dict(body["procedure"])

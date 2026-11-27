@@ -18,6 +18,16 @@ class SupportPlatform(str, Enum):
     SALESFORCE: str = "salesforce"
     FRESHCHAT: str = "freshchat"
     FRESHDESK: str = "freshdesk"
+    DIXA: str = "dixa"
+    GMAIL: str = "gmail"
+    KUSTOMER: str = "kustomer"
+    LIVECHAT: str = "livechat"
+    PUBLIC_API: str = "public-api"
+    CHAT_SDK: str = "chat-sdk"
+    LIVEKIT: str = "livekit"
+    TWILIO: str = "twilio"
+    TALKDESK: str = "talkdesk"
+    INTERCOM_VOICE: str = "intercom-voice"
 
 
 class CustomerSupportPlatformIdentifierType(str, Enum):
@@ -30,6 +40,8 @@ class CustomerSupportPlatformIdentifierType(str, Enum):
     ZENDESK_SUPPORT_USER: str = "zendesk_support_user"
     SALESFORCE_CONTACT_ID: str = "salesforce_contact_id"
     SALESFORCE_ACCOUNT_ID: str = "salesforce_account_id"
+    SALESFORCE_CONTACT_EMAIL: str = "salesforce_contact_email"
+    SALESFORCE_SUPPLIED_EMAIL: str = "salesforce_supplied_email"
 
 
 @dataclass_json
@@ -108,6 +120,10 @@ def start_conversation(
         "customer_id": params.customer_id,
         "channel": params.channel.value,
     }
+    if params.assignee_type is not None:
+        body["assignee_type"] = params.assignee_type.value
+    if params.assignee_id is not None:
+        body["assignee_id"] = params.assignee_id
     if params.created is not None:
         body["created"] = HttpClient.localize(params.created)
     if params.resources is not None:

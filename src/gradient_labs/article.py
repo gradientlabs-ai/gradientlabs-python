@@ -25,6 +25,10 @@ class Visibility(str, Enum):
     # that customers do not have access to.
     INTERNAL: str = "internal"
 
+    # UNKNOWN is only ever returned by the API, when it cannot tell who can view the
+    # item. Do not send it.
+    UNKNOWN: str = "unknown"
+
 
 class PublicationStatus(str, Enum):
     """PublicationStatus describes the status of a help article."""
@@ -35,3 +39,9 @@ class PublicationStatus(str, Enum):
 
     # PUBLISHED means that the article is published.
     PUBLISHED: str = "published"
+
+    # DELETED means that the article has been deleted.
+    DELETED: str = "deleted"
+
+    # EXCLUDED means that the article is kept out of the AI agent's knowledge.
+    EXCLUDED: str = "excluded"

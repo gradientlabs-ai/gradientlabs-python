@@ -31,11 +31,11 @@ class ProcedureListResponse:
 def list_procedures(
     *, client: HttpClient, params: ProcedureListParams
 ) -> ProcedureListResponse:
-    path = "procedures"
+    query_params = {}
     if params.cursor is not None:
-        path = f"{path}?cursor={params.cursor}"
+        query_params["cursor"] = params.cursor
     if params.status is not None:
-        path = f"{path}?status={params.status}"
+        query_params["status"] = ProcedureStatus(params.status).value
 
-    rsp = client.get(path=path, body={})
+    rsp = client.get(path="procedures", query_params=query_params)
     return ProcedureListResponse.from_dict(rsp)
