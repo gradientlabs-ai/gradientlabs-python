@@ -16,7 +16,7 @@ class ToolList:
 
 
 def list_tools(*, client: HttpClient) -> List[Tool]:
-    """list_tools retrieves all tools.
+    """Lists company tools and enabled MCP tools. Interactive tools are omitted.
     Note: requires a `Management` API key."""
     rsp = client.get(
         path="tools",

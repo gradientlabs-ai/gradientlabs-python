@@ -667,7 +667,8 @@ class Client:
         )
 
     def read_tool(self, *, tool_id: str, version: Optional[int] = None) -> Tool:
-        """read_tool retrieves a tool. Leave version out to read its current version.
+        """Leave version out to read the current tool version.
+        Enabled MCP tools can be read by ID. Interactive tools return 404.
 
         Note: requires a `Management` API key."""
         return read_tool(
@@ -677,7 +678,7 @@ class Client:
         )
 
     def list_tools(self) -> List[Tool]:
-        """list_tools lists all tools.
+        """Lists company tools and enabled MCP tools. Interactive tools are omitted.
 
         Note: requires a `Management` API key."""
         return list_tools(
@@ -685,7 +686,9 @@ class Client:
         )
 
     def update_tool(self, *, params: ToolUpdateParams) -> Tool:
-        """Update the supplied fields of a tool.
+        """Updates a webhook, HTTP, async or draft tool.
+
+        Only draft tools can change kind. Edit repository-managed tools in their files.
 
         Note: requires a `Management` API key."""
         return update_tool(
