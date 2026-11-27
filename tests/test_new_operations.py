@@ -436,3 +436,18 @@ def test_rfc3339_fractional_seconds(fraction, microsecond):
     )
     assert memory.created_at.microsecond == microsecond
     assert memory.created_at.utcoffset().total_seconds() == 0
+
+
+def test_list_tools_returns_enabled_mcp_tool():
+    mcp = {"server_id": "mcpserver_1", "external_tool_name": "lookup_order"}
+    tool = {
+        "id": "tool_1",
+        "name": "lookup",
+        "description": "Look up an order",
+        "parameters": [],
+        "mcp": mcp,
+    }
+    client, _ = _client("get", {"tools": [tool]})
+    (result,) = client.list_tools()
+    assert result.mcp.server_id == "mcpserver_1"
+    assert result.mcp.external_tool_name == "lookup_order"

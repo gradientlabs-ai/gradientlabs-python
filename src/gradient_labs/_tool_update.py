@@ -4,7 +4,9 @@ from .tool import Tool, ToolUpdateParams
 
 
 def update_tool(*, client: HttpClient, params: ToolUpdateParams) -> Tool:
-    """Update the supplied fields of a tool.
+    """Updates a webhook, HTTP, async or draft tool.
+
+    Only draft tools can change kind. Edit repository-managed tools in their files.
 
     Note: requires a `Management` API key."""
     body = without_none(params.to_dict())

@@ -7,7 +7,8 @@ from .tool import Tool
 def read_tool(
     *, client: HttpClient, tool_id: str, version: Optional[int] = None
 ) -> Tool:
-    """read_tool retrieves a tool. Leave version out to read its current version.
+    """Leave version out to read the current tool version.
+    Enabled MCP tools can be read by ID. Interactive tools return 404.
     Note: requires a `Management` API key."""
     query_params = {}
     if version is not None:
